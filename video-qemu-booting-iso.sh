@@ -1,0 +1,236 @@
+#!/bin/bash
+#
+# video-qemu-booting-iso.sh                               #
+#                                                         #
+# Copyleft (c) 2007 Brendan M. Sleight                    #
+#              <bmsleight@barwap._REMOVE_SPAM_TRAP.com>   #
+#                                                         #
+# This script is licensed under the GNU GPL v2 or later.  #
+#                                                         #
+# On Debian systems, this license can be obtained via     #
+# /usr/share/common-licenses/GPL                          #
+#                                                         #
+# Required packages/applications :-                       #
+#  bash, expect, ffmpeg2thoera, imagemagick,              #
+#  qemu, vncserver, vncrec-twibright                      #
+#                                                         #
+# Requires /etc/vnc.conf to be ammended.                  #
+#                                                         #
+#                                                         #
+
+
+lock_file_check ()
+{
+if [ -f /tmp/video-qemu-booting-iso.lock ]
+then
+  echo "Lock file /tmp/video-qemu-booting-iso.lock present indicating $0 is already running"
+  exit
+fi
+VNCCONF=$(cat /etc/vnc.conf | grep "^\$vncStartup")
+if [ "$VNCCONF" != "\$vncStartup = \"~/.vnc/xstartup\";" ]
+ then
+  echo "Requires vnc.conf to have the line:-  "
+  echo "\$vncStartup = \"~/.vnc/xstartup\";"
+  echo "Else two lots of windowm mangers will launched in the extra vnc sessions."
+  exit
+fi
+echo "Lock file /tmp/video-qemu-booting-iso.lock present indicating $0 is running" >/tmp/video-qemu-booting-iso.lock
+}
+
+get_global_variables ()
+{
+PASSWD="$RANDOM.$RANDOM.$RANDOM.$RANDOM.$RANDOM"
+HOSTNAME=$(hostname)
+OLD_DISPLAY="$DISPLAY"
+TODAY=$(date +"%F")
+TMP_DIR=/tmp/vqbi.$$.tmp
+IPADDRESS="127.0.0.1"
+}
+
+get_options_and_defaults ()
+{
+if [ "$SENDKEYS" = "" ]; then
+ SENDKEYS="spc,l,i,v,e,spc,kp_enter"
+fi
+if [ "$QEMU_MONITOR_PORT" = "" ]; then
+ QEMU_MONITOR_PORT=4444
+fi
+if [ "$GEOMETRY" = "" ]; then
+ GEOMETRY="1280x960"
+fi
+if [ "$CONVERT_DIM" = "" ]; then
+ CONVERT_DIM="800x600"
+fi
+FFMPEG_DIM_SCALE=$(echo "$CONVERT_DIM" | sed s/x/\ -y\ /g)
+FFMPEG_DIM_SCALE="-x $FFMPEG_DIM_SCALE"
+if [ "$TIME_Q" = "" ]; then
+ TIME_Q="600"
+fi
+if [ "$VQUALITY" = "" ]; then
+ VQUALITY="5"
+fi
+if [ "$QEMU_BIN" = "" ]; then
+ QEMU_BIN="qemu"
+ #qemu_0.8.4-etch1
+fi
+}
+
+
+set_up_workspace ()
+{
+mkdir $TMP_DIR 2>/dev/null
+rm ~/.vnc/passwd
+
+cat<<EOF > ~/.vnc/xstartup
+#!/bin/sh
+xsetroot -solid grey
+EOF
+chmod 755 ~/.vnc/xstartup
+
+cat<<EOF > $TMP_DIR/vnc.exp
+spawn vncpasswd
+expect "Password:" { send "$PASSWD\r" }
+expect "Verify:" { send "$PASSWD\r" }
+interact
+puts "\nVNC Password changed\n"
+EOF
+
+expect $TMP_DIR/vnc.exp >/dev/null 2>/dev/null
+echo "VNC Password changed"
+}
+
+start_vnc_sessions ()
+{
+vncserver -depth 24 -pixelformat rgb888 -cc 4 -nocursor -geometry $GEOMETRY  >$TMP_DIR/vncserver.txt 2>&1
+VNSERVER_QEMU=$(cat $TMP_DIR/vncserver.txt | grep 'New' | awk '{ print $5}' )
+VNCSERVER_QMEU_NUMBER=$(cat $TMP_DIR/vncserver.txt | grep 'New' | cut -d: -f2)
+echo "Launched vncserver $VNSERVER_QEMU"
+vncserver -depth 24 -pixelformat rgb888 -cc 4 -nocursor -geometry 1600x1200  >$TMP_DIR/vncserver.txt 2>&1
+VNSERVER_VNCREC=$(cat $TMP_DIR/vncserver.txt | grep 'New' | awk '{ print $5}' )
+VNCSERVER_VNCREC_NUMBER=$(cat $TMP_DIR/vncserver.txt | grep 'New' | cut -d: -f2)
+echo "Launched vncserver $VNSERVER_VNCREC"
+}
+
+start_vnc_record ()
+{
+export DISPLAY="$VNSERVER_VNCREC"
+export VNCREC_MOVIE_FRAMERATE
+echo "Starting vncrec, recording :$VNCSERVER_QMEU_NUMBER. Local display :$VNCSERVER_VNCREC_NUMBER"
+vncrec -display :$VNCSERVER_VNCREC_NUMBER -passwd ~/.vnc/passwd -shared -viewonly -encoding raw -record $TMP_DIR/qemu.1.vnc :$VNCSERVER_QMEU_NUMBER &
+}
+
+start_qemu ()
+{
+export DISPLAY=$VNSERVER_QEMU
+echo "Starting qemu, within Display $VNSERVER_QEMU"
+IMAGE_TYPE=$(echo "$ISO" | sed -e 's/.*[.]//g')
+if [ "$IMAGE_TYPE" = "img" ]
+then
+  QEMU_OPTS="-hda"
+else
+  QEMU_OPTS="-cdrom"
+fi
+$QEMU_BIN -full-screen $QEMU_OPTS $ISO -monitor telnet:$IPADDRESS:$QEMU_MONITOR_PORT,server,nowait &
+sleep 3
+i=1
+REACHED_LAST_KB=""
+while [ -z $REACHED_LAST_KB ]
+do
+ KEY=$(echo $SENDKEYS | cut -d, -f$i)
+ if [ "$KEY" != "" ]
+ then
+  echo "sendkey $KEY" | socat - TCP4:$IPADDRESS:$QEMU_MONITOR_PORT
+ else
+  REACHED_LAST_KB="Y"
+ fi
+ let i=i+1
+done
+sleep 1
+}
+
+let_qemu_run ()
+{
+echo "Sleeping for $TIME_Q seconds whilst qemu runs"
+sleep $TIME_Q
+}
+
+stop_qemu ()
+{
+echo "Stopping vncrec and qemu"
+killall vncrec
+killall $QEMU_BIN
+}
+
+stop_vncservers ()
+{
+echo "Stopping vncservers"
+vncserver -kill :$VNCSERVER_QMEU_NUMBER
+vncserver -kill :$VNCSERVER_VNCREC_NUMBER
+}
+
+gen_video ()
+{
+#Need to runs some tests to ensure vncrec -movie does temriante at end of session.
+vncrec  -movie $TMP_DIR/qemu.1.vnc | ffmpeg2theora $FFMPEG_DIM_SCALE --videoquality $VQUALITY --inputfps 40 --artist "AutoTesting" --title "Video of Qemu booting $ISO"  --date "$TODAY" -o $VIDEO - 
+}
+
+clean_up ()
+{
+DISPLAY="$OLD_DISPLAY"
+export DISPLAY="$OLD_DISPLAY"
+rm $TMP_DIR -r
+rm /tmp/video-qemu-booting-iso.lock
+}
+
+
+while getopts s:p:g:d:t:v:q: opt
+do
+    case "$opt" in
+      s)  SENDKEYS="$OPTARG";;
+      p)  QEMU_MONITOR_PORT="$OPTARG";;
+      g)  GEOMETRY="$OPTARG";;
+      d)  CONVERT_DIM="$OPTARG";;
+      t)  TIME_Q="$OPTARG";;
+      v)  VQUALITY="$OPTARG";;
+      q)  QEMU_BIN="$OPTARG";;
+
+
+      \?)		# unknown flag
+      	  echo >&2 \
+		"usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] IsoToTest.iso Video.ogg "
+	  exit 1;;
+    esac
+done
+shift `expr $OPTIND - 1`
+
+if [ -z "$1" -a -z "$2" ]; then
+    echo "usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] IsoToTest.iso Video.ogg " 
+    echo
+    echo " This script boots a livecd using qemu and records a video of the process. "
+    echo
+    echo " It is worth noting that this script takes a long time to run and heavy usage of CPU."
+    echo " There is heavy usage of the qemu, imagemagik tools. "
+    echo " For every second of running qemu the script it can take up to 3s to compile the video."
+    echo " For example using -t 1200 will about one hour."
+    echo
+    echo " Minimum geometry for qemu -g 1024x768"
+    echo
+    echo " Launches a couple of vncserver session, kills other vncrec and qemu sessions running."
+    exit
+fi
+
+ISO=$1
+VIDEO=$2
+
+lock_file_check
+get_options_and_defaults
+get_global_variables
+set_up_workspace
+start_vnc_sessions
+start_vnc_record
+start_qemu
+let_qemu_run
+stop_qemu
+gen_video
+stop_vncservers
+clean_up
