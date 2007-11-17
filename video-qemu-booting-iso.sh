@@ -174,6 +174,41 @@ gen_video ()
 vncrec  -movie $TMP_DIR/qemu.1.vnc | ffmpeg2theora $FFMPEG_DIM_SCALE --videoquality $VQUALITY --inputfps 40 --artist "AutoTesting" --title "Video of Qemu booting $ISO"  --date "$TODAY" -o $VIDEO - 
 }
 
+gen_video_preview ()
+{
+MONTAGE_DIR=/tmp/tp.$$.dir.montage
+mkdir $MONTAGE_DIR
+ffmpeg -i $VIDEO -vcodec copy $TMP_DIR/duration.ogg 2>$TMP_DIR/ffmpeg.log
+DURATION_H=$(cat $TMP_DIR/ffmpeg.log | grep Duration | cut -d ' ' -f 4 | sed s/,// | cut -d ':' -f 1)
+DURATION_M=$(cat $TMP_DIR/ffmpeg.log | grep Duration | cut -d ' ' -f 4 | sed s/,// | cut -d ':' -f 2)
+DURATION_S=$(cat $TMP_DIR/ffmpeg.log | grep Duration | cut -d ' ' -f 4 | cut -d '.' -f 1 | sed s/,// | cut -d ':' -f 3)
+LENGTH=$(($DURATION_H*3600+$DURATION_M*60+$DURATION_S))
+echo $LENGTH $DURATION_H $DURATION_M $DURATION_S
+COUNTER=0
+END=5
+COUNT=1
+# Generate a Frame every 0.5 secs for the start of the video
+while [  $COUNTER -lt $END ]; do
+	HALFSECS=$(echo $COUNTER/2|bc -l)
+	ffmpeg -i $VIDEO -an -ss $HALFSECS -t 01 -r 1 -y -s 320x240 $TMP_DIR/video%d.jpg 2>/dev/null
+	mv $TMP_DIR/video1.jpg $MONTAGE_DIR/$COUNT.jpg 
+	LIST="$LIST $MONTAGE_DIR/$COUNT.jpg"
+	let COUNT=COUNT+1
+	let COUNTER=COUNTER+1
+done
+SPLIT=$(($LENGTH/12))
+COUNTER="$SPLIT" 	
+while [  $COUNTER -lt $LENGTH ]; do
+	ffmpeg -i $VIDEO -an -ss $COUNTER -t 01 -r 1 -y $TMP_DIR/video%d.jpg 2>/dev/null
+	mv $TMP_DIR/video1.jpg $MONTAGE_DIR/$COUNT.jpg 
+	LIST="$LIST $MONTAGE_DIR/$COUNT.jpg"
+	let COUNT=COUNT+1
+	let COUNTER=$(($COUNTER+$SPLIT))
+done
+montage -geometry 180x135+4+4 -frame 5 $LIST $VIDEO.jpg 
+rm -R $MONTAGE_DIR
+}
+
 clean_up ()
 {
 DISPLAY="$OLD_DISPLAY"
@@ -183,7 +218,7 @@ rm /tmp/video-qemu-booting-iso.lock
 }
 
 
-while getopts s:p:g:d:t:v:q: opt
+while getopts s:p:g:d:t:v:q:n opt
 do
     case "$opt" in
       s)  SENDKEYS="$OPTARG";;
@@ -193,18 +228,19 @@ do
       t)  TIME_Q="$OPTARG";;
       v)  VQUALITY="$OPTARG";;
       q)  QEMU_BIN="$OPTARG";;
+      n)  NOPREVIEW="true";;
 
 
       \?)		# unknown flag
       	  echo >&2 \
-		"usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] IsoToTest.iso Video.ogg "
+		"usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] [-n] IsoToTest.iso Video.ogg "
 	  exit 1;;
     esac
 done
 shift `expr $OPTIND - 1`
 
 if [ -z "$1" -a -z "$2" ]; then
-    echo "usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] IsoToTest.iso Video.ogg " 
+    echo "usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] [-n Do not gernerate a preview of the video.ogg.jpg] IsoToTest.iso Video.ogg " 
     echo
     echo " This script boots a livecd using qemu and records a video of the process. "
     echo
@@ -232,5 +268,10 @@ start_qemu
 let_qemu_run
 stop_qemu
 gen_video
+if [ "$NOPREVIEW" = "true" ]; then
+	echo "Skipping jpg preview"
+else
+	gen_video_preview
+fi
 stop_vncservers
 clean_up
