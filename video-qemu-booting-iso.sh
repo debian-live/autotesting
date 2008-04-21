@@ -207,6 +207,7 @@ while [  $COUNTER -lt $LENGTH ]; do
 done
 montage -geometry 180x135+4+4 -frame 5 $LIST $VIDEO.jpg 
 rm -R $MONTAGE_DIR
+rmdir $MONTAGE_DIR
 }
 
 clean_up ()
