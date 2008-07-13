@@ -101,13 +101,13 @@ echo "VNC Password changed"
 
 start_vnc_sessions ()
 {
-vncserver -depth 24 -pixelformat rgb888 -cc 4 -nocursor -geometry $GEOMETRY  >$TMP_DIR/vncserver.txt 2>&1
-VNSERVER_QEMU=$(cat $TMP_DIR/vncserver.txt | grep 'New' | awk '{ print $5}' )
-VNCSERVER_QMEU_NUMBER=$(cat $TMP_DIR/vncserver.txt | grep 'New' | cut -d: -f2)
+vncserver -depth 24   -Protocol3.3 -geometry $GEOMETRY -localhost >$TMP_DIR/vncserver.txt 2>&1
+VNSERVER_QEMU=$(cat $TMP_DIR/vncserver.txt | grep 'New' | awk '{ print $6}' )
+VNCSERVER_QMEU_NUMBER=$(cat $TMP_DIR/vncserver.txt | grep 'New' | cut -d: -f3)
 echo "Launched vncserver $VNSERVER_QEMU"
-vncserver -depth 24 -pixelformat rgb888 -cc 4 -nocursor -geometry 1600x1200  >$TMP_DIR/vncserver.txt 2>&1
-VNSERVER_VNCREC=$(cat $TMP_DIR/vncserver.txt | grep 'New' | awk '{ print $5}' )
-VNCSERVER_VNCREC_NUMBER=$(cat $TMP_DIR/vncserver.txt | grep 'New' | cut -d: -f2)
+vncserver -depth 24  -Protocol3.3 -geometry 1600x1200 -localhost >$TMP_DIR/vncserver.txt 2>&1
+VNSERVER_VNCREC=$(cat $TMP_DIR/vncserver.txt | grep 'New' | awk '{ print $6}' )
+VNCSERVER_VNCREC_NUMBER=$(cat $TMP_DIR/vncserver.txt | grep 'New' | cut -d: -f3)
 echo "Launched vncserver $VNSERVER_VNCREC"
 }
 
@@ -116,7 +116,7 @@ start_vnc_record ()
 export DISPLAY="$VNSERVER_VNCREC"
 export VNCREC_MOVIE_FRAMERATE
 echo "Starting vncrec, recording :$VNCSERVER_QMEU_NUMBER. Local display :$VNCSERVER_VNCREC_NUMBER"
-vncrec -display :$VNCSERVER_VNCREC_NUMBER -passwd ~/.vnc/passwd -shared -viewonly -encoding raw -record $TMP_DIR/qemu.1.vnc :$VNCSERVER_QMEU_NUMBER &
+vncrec -display :$VNCSERVER_VNCREC_NUMBER -passwd ~/.vnc/passwd -depth 24 -shared -truecolor -viewonly -encoding raw -record $TMP_DIR/qemu.1.vnc :$VNCSERVER_QMEU_NUMBER 1>/dev/null 2>&1 &
 }
 
 start_qemu ()
@@ -131,7 +131,7 @@ else
   QEMU_OPTS="-cdrom"
 fi
 $QEMU_BIN -full-screen $QEMU_OPTS $ISO -monitor telnet:$IPADDRESS:$QEMU_MONITOR_PORT,server,nowait &
-sleep 3
+sleep 10 # This is really important. I not sure why, vnc catch-up time maybe, but it just works :), remove at your peril
 i=1
 REACHED_LAST_KB=""
 while [ -z $REACHED_LAST_KB ]
@@ -164,14 +164,15 @@ killall $QEMU_BIN
 stop_vncservers ()
 {
 echo "Stopping vncservers"
-vncserver -kill :$VNCSERVER_QMEU_NUMBER
-vncserver -kill :$VNCSERVER_VNCREC_NUMBER
+vncserver -kill :$VNCSERVER_QMEU_NUMBER >/dev/null 2>&1
+vncserver -kill :$VNCSERVER_VNCREC_NUMBER >/dev/null 2>&1
 }
 
 gen_video ()
 {
 #Need to runs some tests to ensure vncrec -movie does temriante at end of session.
-vncrec  -movie $TMP_DIR/qemu.1.vnc | ffmpeg2theora $FFMPEG_DIM_SCALE --videoquality $VQUALITY --inputfps 40 --artist "AutoTesting" --title "Video of Qemu booting $ISO"  --date "$TODAY" -o $VIDEO - 
+echo "Generating video from recorded vnc stream. "
+vncrec  -movie $TMP_DIR/qemu.1.vnc 2>/dev/null | ffmpeg2theora $FFMPEG_DIM_SCALE --videoquality $VQUALITY --inputfps 40 --artist "AutoTesting.livecd.org" --title "Video of Qemu booting $ISO"  --date "$TODAY" -o $VIDEO - 2>/dev/null
 }
 
 gen_video_preview ()
@@ -183,7 +184,7 @@ DURATION_H=$(cat $TMP_DIR/ffmpeg.log | grep Duration | cut -d ' ' -f 4 | sed s/,
 DURATION_M=$(cat $TMP_DIR/ffmpeg.log | grep Duration | cut -d ' ' -f 4 | sed s/,// | cut -d ':' -f 2)
 DURATION_S=$(cat $TMP_DIR/ffmpeg.log | grep Duration | cut -d ' ' -f 4 | cut -d '.' -f 1 | sed s/,// | cut -d ':' -f 3)
 LENGTH=$(($DURATION_H*3600+$DURATION_M*60+$DURATION_S))
-echo $LENGTH $DURATION_H $DURATION_M $DURATION_S
+echo "Duration of Video $LENGTH $DURATION_H $DURATION_M $DURATION_S"
 COUNTER=0
 END=5
 COUNT=1
