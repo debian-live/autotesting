@@ -116,7 +116,7 @@ start_vnc_record ()
 export DISPLAY="$VNSERVER_VNCREC"
 export VNCREC_MOVIE_FRAMERATE
 echo "Starting vncrec, recording :$VNCSERVER_QMEU_NUMBER. Local display :$VNCSERVER_VNCREC_NUMBER"
-vncrec -display :$VNCSERVER_VNCREC_NUMBER -passwd ~/.vnc/passwd -depth 24 -shared -truecolor -viewonly -encoding raw -record $TMP_DIR/qemu.1.vnc :$VNCSERVER_QMEU_NUMBER 1>/dev/null 2>&1 &
+vncrec -display :$VNCSERVER_VNCREC_NUMBER -passwd ~/.vnc/passwd -depth 24 -shared -truecolor -viewonly -encoding raw -record $TMP_DIR/qemu.1.vnc :$VNCSERVER_QMEU_NUMBER  &
 }
 
 start_qemu ()
