@@ -56,7 +56,9 @@ fi
 
 echo "Lock file present indicating $0 is running" >/tmp/run-batch-autotesting.lock
 
-cat $URLLIST | while read URL; do
+URLS=$(cat $URLLIST) # stdio is used by video-qemu-booting
+for URL in $URLS
+do 
     BASE_NAME=$(echo $URL |  rev | cut -d"/" -f 1 | rev)
     PART_URL=$(echo $URL |  rev | cut -d"/" -f 2- | rev)
     MD5SUMS="$PART_URL/MD5SUMS"
@@ -81,8 +83,13 @@ cat $URLLIST | while read URL; do
             DATE_IMAGE_BUILT=$(ls -lh --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
             DATE_DOWNLOADED=$(ls -lc --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
             VIDEO_NAME="$VIDEO_DIRECTORY/${BASE_NAME}_Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_.ogg"
-            LOG_FILE="${VIDEO_NAME}.log"
+            LOG_FILE="$VIDEO_DIRECTORY/${BASE_NAME}_Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_.log"
+            echo "AutoTesting $BASE_NAME $VIDEO_NAME"
             $VIDEO_QEMU_BOOTING -g 1024x768  -t 300 -v 5  $DIRECTORY/$BASE_NAME $VIDEO_NAME >$LOG_FILE 2>&1
+            echo "Finished Autotesting $BASE_NAME"
+            echo
+            echo "----"
+            echo
         fi
     fi
 done
