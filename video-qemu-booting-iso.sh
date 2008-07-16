@@ -206,7 +206,9 @@ while [  $COUNTER -lt $LENGTH ]; do
 	let COUNT=COUNT+1
 	let COUNTER=$(($COUNTER+$SPLIT))
 done
-montage -geometry 180x135+4+4 -frame 5 $LIST $VIDEO.jpg 
+montage -geometry 180x135+4+4 -frame 5 $LIST $VIDEO.montage.jpg 
+LAST_FRAME_OF_MONTAGE=$(echo $LIST | rev | cut -d" " -f1 | rev )
+cp $LAST_FRAME_OF_MONTAGE $VIDEO.end.jpg
 rm -R $MONTAGE_DIR
 rmdir $MONTAGE_DIR
 }
