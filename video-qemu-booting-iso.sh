@@ -117,6 +117,7 @@ export DISPLAY="$VNSERVER_VNCREC"
 export VNCREC_MOVIE_FRAMERATE
 echo "Starting vncrec, recording :$VNCSERVER_QMEU_NUMBER. Local display :$VNCSERVER_VNCREC_NUMBER"
 vncrec -display :$VNCSERVER_VNCREC_NUMBER -passwd ~/.vnc/passwd -depth 24 -shared -truecolor -viewonly -encoding raw -record $TMP_DIR/qemu.1.vnc :$VNCSERVER_QMEU_NUMBER  &
+#sleep 20
 }
 
 start_qemu ()
@@ -131,11 +132,13 @@ else
   QEMU_OPTS="-cdrom"
 fi
 $QEMU_BIN -full-screen $QEMU_OPTS $ISO -monitor telnet:$IPADDRESS:$QEMU_MONITOR_PORT,server,nowait &
-sleep 10 # This is really important. I not sure why, vnc catch-up time maybe, but it just works :), remove at your peril
+sleep 100 # This is important. Im not sure why, vnc catch-up time maybe, but it just works :), remove at your peril
+
 i=1
 REACHED_LAST_KB=""
 while [ -z $REACHED_LAST_KB ]
 do
+ sleep 2
  KEY=$(echo $SENDKEYS | cut -d, -f$i)
  if [ "$KEY" != "" ]
  then
@@ -173,6 +176,9 @@ gen_video ()
 #Need to runs some tests to ensure vncrec -movie does temriante at end of session.
 echo "Generating video from recorded vnc stream. "
 vncrec  -movie $TMP_DIR/qemu.1.vnc 2>/dev/null | ffmpeg2theora $FFMPEG_DIM_SCALE --videoquality $VQUALITY --inputfps 40 --artist "AutoTesting.livecd.org" --title "Video of Qemu booting $ISO"  --date "$TODAY" -o $VIDEO - 2>/dev/null
+/home/autotesting/pyvnc2swf/edit.py -o $VIDEO.swf -c -s 0.703125 -t video $TMP_DIR/qemu.1.vnc 
+VIDEO_NO_EXT=${VIDEO%.*}
+mv $VIDEO.html ${VIDEO_NO_EXT}_View_swf_Video_.html
 }
 
 gen_video_preview ()

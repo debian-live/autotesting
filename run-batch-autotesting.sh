@@ -48,6 +48,13 @@ URLLIST=$1
 DIRECTORY=$2
 VIDEO_DIRECTORY=$3
 
+if [ -z "$4" ]
+then
+    MD5SUM_FILE="MD5SUMS"
+else
+    MD5SUM_FILE="$4"
+fi
+
 if [ -f /tmp/run-batch-autotesting.lock ]
 then
    echo "Lock file /tmp/run-batch-autotesting.lock present indicating $0 is already running"
@@ -61,8 +68,8 @@ for URL in $URLS
 do 
     BASE_NAME=$(echo $URL |  rev | cut -d"/" -f 1 | rev)
     PART_URL=$(echo $URL |  rev | cut -d"/" -f 2- | rev)
-    MD5SUMS="$PART_URL/MD5SUMS"
-    HAS_FILE_UPDATED_TODAY=$(find $DIRECTORY/ -ctime -1 \! -type d | grep "$BASE_NAME")
+    MD5SUMS="$PART_URL/$MD5SUM_FILE"
+    HAS_FILE_UPDATED_TODAY=$(find $DIRECTORY/ -ctime -0 \! -type d | grep "$BASE_NAME")
     if [ -n "$HAS_FILE_UPDATED_TODAY" ]
     then
         echo "$BASE_NAME already downloaded today "
@@ -70,11 +77,11 @@ do
     else
         echo "Downloading $URL"
         rm $DIRECTORY/$BASE_NAME 2>/dev/null
-        rm $DIRECTORY/MD5SUMS 2>/dev/null
+        rm $DIRECTORY/$MD5SUM_FILE 2>/dev/null
         wget --no-verbose --tries=3 --timeout=60 --directory-prefix=$DIRECTORY $URL
         wget --no-verbose --tries=3 --timeout=60 --directory-prefix=$DIRECTORY $MD5SUMS
         MD5SUM_LOCAL=$(md5sum $DIRECTORY/$BASE_NAME | cut --fields=1 --delimiter=\  )
-        MD5SUM_REMOTE=$(cat $DIRECTORY/MD5SUMS | grep "$BASE_NAME" | head -n 1 | cut --fields=1 --delimiter=\  )
+        MD5SUM_REMOTE=$(cat $DIRECTORY/$MD5SUM_FILE | grep "$BASE_NAME" | head -n 1 | cut --fields=1 --delimiter=\  )
         if [[ $MD5SUM_LOCAL != $MD5SUM_REMOTE ]]
         then
             echo "$BASE_NAME - md5sums different, remote: $MD5SUM_REMOTE, local: $MD5SUM_LOCAL. "
@@ -82,8 +89,9 @@ do
         else
             DATE_IMAGE_BUILT=$(ls -lh --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
             DATE_DOWNLOADED=$(ls -lc --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
-            VIDEO_NAME="$VIDEO_DIRECTORY/${BASE_NAME}_Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_.ogg"
-            LOG_FILE="$VIDEO_DIRECTORY/${BASE_NAME}_Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_.log"
+            mkdir "$VIDEO_DIRECTORY/${BASE_NAME}" 
+            VIDEO_NAME="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_.ogg"
+            LOG_FILE="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_.log"
             echo "AutoTesting $BASE_NAME $VIDEO_NAME"
             $VIDEO_QEMU_BOOTING -g 1024x768  -t 300 -v 5  $DIRECTORY/$BASE_NAME $VIDEO_NAME >$LOG_FILE 2>&1
             echo "Finished Autotesting $BASE_NAME"
