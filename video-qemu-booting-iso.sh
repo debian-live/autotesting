@@ -159,6 +159,8 @@ sleep $TIME_Q
 
 stop_qemu ()
 {
+echo "Capture final screen-shot"
+import -window root $VIDEO.end.jpg
 echo "Stopping vncrec and qemu"
 killall vncrec
 killall $QEMU_BIN
@@ -176,7 +178,7 @@ gen_video ()
 #Need to runs some tests to ensure vncrec -movie does temriante at end of session.
 echo "Generating video from recorded vnc stream. "
 vncrec  -movie $TMP_DIR/qemu.1.vnc 2>/dev/null | ffmpeg2theora $FFMPEG_DIM_SCALE --videoquality $VQUALITY --inputfps 40 --artist "AutoTesting.livecd.org" --title "Video of Qemu booting $ISO"  --date "$TODAY" -o $VIDEO - 2>/dev/null
-/home/autotesting/pyvnc2swf/edit.py -o $VIDEO.swf -c -s 0.703125 -t video $TMP_DIR/qemu.1.vnc 
+vnc2swf-edit -o $VIDEO.swf -l -c -s 0.703125 -t video $TMP_DIR/qemu.1.vnc 
 VIDEO_NO_EXT=${VIDEO%.*}
 mv $VIDEO.html ${VIDEO_NO_EXT}_View_swf_Video_.html
 }
@@ -213,8 +215,6 @@ while [  $COUNTER -lt $LENGTH ]; do
 	let COUNTER=$(($COUNTER+$SPLIT))
 done
 montage -geometry 180x135+4+4 -frame 5 $LIST $VIDEO.montage.jpg 
-LAST_FRAME_OF_MONTAGE=$(echo $LIST | rev | cut -d" " -f1 | rev )
-cp $LAST_FRAME_OF_MONTAGE $VIDEO.end.jpg
 rm -R $MONTAGE_DIR
 rmdir $MONTAGE_DIR
 }

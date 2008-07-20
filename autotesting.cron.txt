@@ -1,0 +1,15 @@
+0 0 * * * /bin/echo "New Day " >/home/autotesting/log/daily/autotesting.log
+0 1 * * * /bin/bash /home/autotesting/debian-live/autotesting/run-batch-autotesting.sh /home/autotesting/debian-live/autotesting/daily.lst /home/autotesting/iso/daily/ /home/autotesting/video/daily/ /home/autotesting/www-root/debian-live/i386/ >>/home/autotesting/log/daily/autotesting.log 2>&1
+
+0 5 * * * /bin/bash /home/autotesting/debian-live/autotesting/run-batch-autotesting.sh /home/autotesting/debian-live/autotesting/webconverger.lst /home/autotesting/iso/daily/ /home/autotesting/video/daily/ /home/autotesting/www-root/webconverger/i386/ webc-3.2.mini.iso.MD5SUM   >>/home/autotesting/log/daily/autotesting.log 2>&1
+
+0 0 * * 5 /bin/echo "New Week " >/home/autotesting/log/weekly/autotesting.log
+0 9 * * 5 /bin/bash /home/autotesting/debian-live/autotesting/run-batch-autotesting.sh /home/autotesting/debian-live/autotesting/weekly.lst /home/autotesting/iso/weekly/ /home/autotesting/video/weekly/ /home/autotesting/www-root/debian-live/i386/ >>/home/autotesting/log/weekly/autotesting.log 2>&1
+
+0 0 15 * * /bin/echo "New Month " >/home/autotesting/log/daily/autotesting.log
+0 17 15 * * /bin/bash /home/autotesting/debian-live/autotesting/run-batch-autotesting.sh /home/autotesting/debian-live/autotesting/monthly.lst /home/autotesting/iso/monthly/ /home/autotesting/video/monthly/ /home/autotesting/www-root/debian-live/i386/ >>/home/autotesting/log/monthly/autotesting.log 2>&1
+
+0 0 * * * /bin/bash /home/autotesting/debian-live/autotesting/clean-old-files.sh
+
+
+#/home/autotesting/debian-live/autotesting/local_build_debian-live.sh /home/autotesting/iso/local/debian-live-etch-i386-xfce-desktop.iso etch xfce >>/home/autotesting/log/local/autobuild.log  2>&1  
