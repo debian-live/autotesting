@@ -1,0 +1,129 @@
+#!wml
+#include <main.wmi>
+#
+# Not the best perl I ever written.
+
+<title "Autotesting LiveCD Org">
+<description "Autotesting LiveCD Images">
+<keywords "Autotesting, LiveCD">
+
+
+<define-tag dlurl whitespace=delete>
+<:{
+sub GetSetting
+{
+  my ($cfg_value,$cfg_filename,$cfg_default)=@_;
+  open(CFGFILE,"<$cfg_filename") or die "Can't open configuration file $cfg_filename.";
+  my @cf=<CFGFILE>;
+  foreach $cfg_line (@cf)
+  {
+    if (index($cfg_line,"#")==0) { next; } # Lines starting with a hash mark are comments
+    my @ln=split("=",$cfg_line);
+    if ($ln[0] =~ /$cfg_value/i) {
+      chomp $ln[1];
+      return $ln[1];
+    }
+  }
+  close CFGFILE;
+  return $cfg_default; # Return default if we can't find the value 
+}
+my $url = GetSetting('url','details.txt','http://debian-live.alioth.debian.org/');
+print "$url";
+}:>
+</define-tag>
+
+<define-tag built whitespace=delete>
+<:{
+my $built = GetSetting('built','details.txt','Sometime-Ago');
+print "$built";
+}:>
+</define-tag>
+
+<define-tag tested whitespace=delete>
+<:{
+my $tested = GetSetting('tested','details.txt','Today');
+print "$tested";
+}:>
+</define-tag>
+
+<define-tag tested-long whitespace=delete>
+<:{
+my $tested = GetSetting('tested_long','details.txt','Today');
+print "$tested_long";
+}:>
+</define-tag>
+
+<define-tag basename whitespace=delete>
+<:{
+my $basename = GetSetting('image','details.txt','.iso');
+print "$basename";
+}:>
+</define-tag>
+
+
+<h1>Autesting of <basename></h1>
+<p>Download: <a href=<dlurl>><dlurl></a><p>
+<p>Build: <built></p>
+<p>Tested: <tested-long></p>
+
+<h2>Final Frame</h2>
+<:{
+my $tested = GetSetting('tested','details.txt','Today');
+print "$tested";
+print "<img src=\"./final-screenshot_", $tested, ".jpg\" border=\"0\" >"
+}:>
+
+
+<h2>Video</h2>
+
+<p>Below is a video of the booting of this image within qemu.</p>
+
+<p>Please note - Java or gjc is required to play the video via the <a href=http://www.flumotion.net/cortado/>
+Cortado Java applet</a>. This applet plays the <a href=http://en.wikipedia.org/wiki/Theora>theora</a> encoded video. 
+</p>
+<p>Bug: At the moment seek button or the seek bar does not work. It is worth watching in the whole video (1 minute). 
+Note the first part of the boot up can appear slow, this is to avoid a qemu bug. </p>
+
+
+<script language="javascript">
+	     function doPlay()   {document.applets[0].doPlay();}
+	     function doPause()   {document.applets[0].doPause();}
+	     function doSeek(pos)   {document.applets[0].doSeek(pos);}
+</script>
+ <applet code="com.fluendo.player.Cortado.class" archive="http://autotesting.livecd.org/jar/cortado.jar" width="800" height="600"/>
+<:{
+    use Cwd;
+    my $dir = getcwd;
+    ($absolut) = $dir =~ m|/var/www(/.*)$|;
+    my $tested = GetSetting('tested','details.txt','Today');
+    print "$tested";
+    print "<param name=\"url\" value=\"http://autotesting.livecd.org$absolut/video-booting.theora_", $tested , ".ogg\"/>";
+}:>
+ 	<param name="local" value="false"/>                    
+ 	<param name="seekable" value="false"/>                    
+ 	<param name="keepaspect" value="true" />
+ 	<param name="video" value="true" />
+ 	<param name="audio" value="false" />
+ 	<param name="showStatus" value="true" />
+ 	<param name="bufferSize" value="200" />
+        <param name="statusHeight" VALUE="36" />
+        <param name="autoPlay" VALUE="false" />
+        <param name="duration" VALUE="140" />
+ </applet>
+<p>
+<button onClick="doPlay()">
+Play
+</button>
+
+<button onClick="doPause()">
+Pause
+</button>
+
+<:{
+my $tested = GetSetting('tested','details.txt','Today');
+print "$tested";
+print "<p>The <a href=./video-booting.theora_", $tested, ".ogg>video is available for download</a> for offline viewing.<p>"
+
+}:>
+
+

@@ -1,0 +1,40 @@
+# includes/link.wmi
+
+<define-tag mailto endtag=required whitespace=delete>
+  <a href="mailto:<EMAIL "%0">" title="<EMAIL "%0">">%body</a>
+</define-tag>
+
+<define-tag link endtag=required whitespace=delete>
+  <a href="<URL "%0">">%body</a>
+</define-tag>
+
+<define-tag EMAIL whitespace=delete>
+  <ifeq "%0" "daniel" "daniel@debian.org">
+</define-tag>
+
+<define-tag URL whitespace=delete>
+  <if   "%0" ""			"$(DOCROOT)">
+  <ifeq "%0" "home"		"$(DOCROOT)/">
+  <ifeq "%0" "links"		"$(DOCROOT)/links.html">
+  <ifeq "%0" "debian-live"      "$(DOCROOT)/debian-live/">
+  <ifeq "%0" "webconverger"     "$(DOCROOT)/webconverger/">
+  <ifeq "%0" "local-build"      "$(DOCROOT)/local-build/">
+</define-tag>
+
+<define-tag newslink whitespace=delete>
+  <a href="%0">[...]</a>
+</define-tag>
+
+<define-tag screenshot-right whitespace=delete>
+  <a href="$(DOCROOT)/screenshots/%0.png" title="Click for larger version">
+    <img class="screenshot-right" src="$(DOCROOT)/screenshots/%0_sm.png" border="0" />
+  </a>
+</define-tag>
+
+<define-tag screenshot whitespace=delete>
+<p>
+  <a href="$(DOCROOT)/screenshots/%0.png" title="Click for larger version">
+    <img class="screenshot" src="$(DOCROOT)/screenshots/%0_sm.png" border="0" />
+  </a>
+</p>
+</define-tag>

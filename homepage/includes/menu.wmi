@@ -1,0 +1,10 @@
+# includes/menu.wmi
+
+<div id="floatmenu">
+	<div class="menuitem">Welcome</div>
+		<div class="menusubitem"><link home>Home</link></div>
+	<div class="menuitem">Autotesting</div>
+                <div class="menusubitem"><link debian-live>Debian-Live</link></div>
+                <div class="menusubitem"><link webconverger>Webconverger</link></div>
+                <div class="menusubitem"><link local-build>local-builds</link></div>
+</div>

@@ -3,6 +3,7 @@
 # Locally build a debian-live image.
 #  as crontab from root
 #  Kick auotesting to test..
+# debian-live-lenny-i386-gnome-desktop.iso
 
 if [ -z "$1" -a -z "$2" ]
 then
@@ -13,9 +14,9 @@ fi
 if [ -z "$3" ]
 then
     echo "blank packages-lists"
-    PACKAGE_LISTS=""
+    PACKAGES_LISTS=""
 else
-    PACKAGE_LISTS=" --packages-lists \"$2 \""
+    PACKAGES_LISTS="--packages-lists $3"
 fi
 
 TODAY=$(date +"%F")
@@ -24,9 +25,9 @@ mkdir $TMP_DIR
 #chmod a+w $TMP_DIR
 cd $TMP_DIR
 
-lh_config --distribution $2  "$PACKAGE_LISTS"
+lh_config --distribution $2  $PACKAGES_LISTS
 sudo lh_build
-cp ./binary.iso "$1"
+cp ./binary.iso ${1}-${2}-${3}.iso
 ls ./ "$1"
 #chmod a+w "$1"
 sudo rm $TMP_DIR -R

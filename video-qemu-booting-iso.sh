@@ -178,9 +178,9 @@ gen_video ()
 #Need to runs some tests to ensure vncrec -movie does temriante at end of session.
 echo "Generating video from recorded vnc stream. "
 vncrec  -movie $TMP_DIR/qemu.1.vnc 2>/dev/null | ffmpeg2theora $FFMPEG_DIM_SCALE --videoquality $VQUALITY --inputfps 40 --artist "AutoTesting.livecd.org" --title "Video of Qemu booting $ISO"  --date "$TODAY" -o $VIDEO - 2>/dev/null
-vnc2swf-edit -o $VIDEO.swf -l -c -s 0.703125 -t video $TMP_DIR/qemu.1.vnc 
-VIDEO_NO_EXT=${VIDEO%.*}
-mv $VIDEO.html ${VIDEO_NO_EXT}_View_swf_Video_.html
+#vnc2swf-edit -o $VIDEO.swf -l -c -s 0.703125 -t video $TMP_DIR/qemu.1.vnc 
+#VIDEO_NO_EXT=${VIDEO%.*}
+#mv $VIDEO.html ${VIDEO_NO_EXT}_View_swf_Video_.html
 }
 
 gen_video_preview ()

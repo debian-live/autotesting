@@ -1,0 +1,16 @@
+# includes/footer.wmi
+
+<div id="footer">
+	<webmasterhtml> &mdash; <br //>
+
+	Last modified:
+	<:
+		@stat = stat($WML_SRC_FILENAME);
+		print scalar localtime($stat[9]);
+	:>
+	-
+	Last compiled:
+	<:
+		print scalar localtime();
+	:>
+</div>

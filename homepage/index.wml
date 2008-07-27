@@ -1,0 +1,59 @@
+#!wml
+#include "main.wmi"
+
+<title "Autotesting LiveCD Org">
+<description "Autotesting LiveCD Images">
+<keywords "Autotesting, LiveCD">
+
+<h1>About</h1>
+
+<p>
+
+   A project to Autotest LiveCD images. The output of the autotesting is to create video recordings of booting live 
+images  "This will be really great for doing QA on the images, so that we know before downloading if a 
+latest-and-greatest sid image is even booting/working correctly :)"
+
+</p>
+
+
+<:{
+use File::Find;
+use File::Basename;
+
+$dir = "./";
+$search_path="index\.html";
+$search_pattern_part2=".(current).";
+
+find({ wanted => \&filter, follow => 1 }, $dir);
+
+sub filter() {
+     $filename = $_;
+     $fullname = $File::Find::name;
+       if ($fullname =~ /$search_path/i) {
+         if($fullname =~ /$search_pattern_part2/i) {
+            push (@current, $fullname)
+            }
+         else {
+            push (@other, $fullname)
+            }
+         last;
+         }
+     }
+
+print "<h2>Current Videos</h2>";
+foreach(sort @current) {
+ print "</p><a href=\"$_\">$_</a> </p>\n";
+}
+
+print "<h2>Older Videos</h2>";
+foreach(sort @other) {
+ if ($_ !~ /\.\/index\.html/) {
+   print "</p><a href=\"$_\">$_</a> </p>\n";
+ }
+}
+
+
+
+}:>
+
+

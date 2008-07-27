@@ -98,36 +98,43 @@ do
         else
             DATE_IMAGE_BUILT=$(ls -lh --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
             DATE_DOWNLOADED=$(ls -lc --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
+            TODAY=$(date  +"%F")
+            TODAY_LONG=$(date )
             mkdir "$VIDEO_DIRECTORY/${BASE_NAME}" 
-            VIDEO_NAME="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_.ogg"
-            LOG_FILE="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}_log.txt"
+            VIDEO_NAME="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}_.ogg"
+            LOG_FILE="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}_log.txt"
             echo "AutoTesting $BASE_NAME $VIDEO_NAME"
-            $VIDEO_QEMU_BOOTING -g 1024x768  -t 420 -v 5  $DIRECTORY/$BASE_NAME $VIDEO_NAME >$LOG_FILE 2>&1
+            $VIDEO_QEMU_BOOTING -g 1280x960  -t 420 -v 5  $DIRECTORY/$BASE_NAME $VIDEO_NAME >$LOG_FILE 2>&1
             echo "Finished Autotesting $BASE_NAME"
             echo
             echo "----"
             echo
-            echo "* Creating symlinks to webserver"
-            LN_S_ROOT="$WEB_ROOT/$BASE_NAME/built_${DATE_IMAGE_BUILT}/Tested_${DATE_DOWNLOADED}"
+            echo "* Moving to webserver"
+            LN_S_ROOT="$WEB_ROOT/$BASE_NAME/built_${DATE_IMAGE_BUILT}/Tested_${TODAY}"
             LN_S_CURRENT="$WEB_ROOT/$BASE_NAME/current"
             # making directories if required.
             mkdir -p "$LN_S_ROOT"
+            rm "$LN_S_CURRENT/*" -rf
             mkdir -p "$LN_S_CURRENT"
             # get rid of the old current
-            rm "$LN_S_CURRENT/*"
-            ln -s $VIDEO_NAME             "$LN_S_ROOT/video-booting.theora.ogg"
-            ln -s $VIDEO_NAME             "$LN_S_CURRENT/video-booting.theora.ogg"
-            ln -s $VIDEO_NAME.montage.jpg "$LN_S_ROOT/video-booting-montage.jpg"
-            ln -s $VIDEO_NAME.montage.jpg "$LN_S_CURRENT/video-booting-montage.jpg"
-            ln -s $VIDEO_NAME.end.jpg     "$LN_S_ROOT/final-screenshot.jpg"
-            ln -s $VIDEO_NAME.end.jpg     "$LN_S_CURRENT/final-screenshot.jpg"
-            SWF_NAME=$(echo $VIDEO_NAME.swf |  rev | cut -d"/" -f 1 | rev)
-            ln -s $VIDEO_NAME.swf         "$LN_S_ROOT/$SWF_NAME"
-            ln -s $VIDEO_NAME.swf         "$LN_S_CURRENT/$SWF_NAME"
-            HTML_PAGE="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${DATE_DOWNLOADED}__View_swf_Video_.html"
-            ln -s $HTML_PAGE              "$LN_S_ROOT/play-video-booting-swf.html"
-            ln -s $HTML_PAGE              "$LN_S_CURRENT/play-video-booting-swf.html"
+            cp $VIDEO_NAME                "$LN_S_ROOT/video-booting.theora_${TODAY}.ogg"
+            mv $VIDEO_NAME             "$LN_S_CURRENT/video-booting.theora_${TODAY}.ogg"
+            cp $VIDEO_NAME.montage.jpg    "$LN_S_ROOT/video-booting-montage_${TODAY}.jpg"
+            mv $VIDEO_NAME.montage.jpg "$LN_S_CURRENT/video-booting-montage_${TODAY}.jpg"
+            cp $VIDEO_NAME.end.jpg        "$LN_S_ROOT/final-screenshot_${TODAY}.jpg"
+            mv $VIDEO_NAME.end.jpg     "$LN_S_CURRENT/final-screenshot_${TODAY}.jpg"
             echo "----"
+            cp /home/autotesting/debian-live/autotesting/homepage/video-page.wml "$LN_S_ROOT/index.wml"
+            cp /home/autotesting/debian-live/autotesting/homepage/video-page.wml "$LN_S_CURRENT/index.wml"
+            DETAILS_TXT="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}__details.txt"
+            echo "# Setting used for index.wml"   >$DETAILS_TXT
+            echo "url=${URL}"                     >>$DETAILS_TXT
+            echo "image=${BASE_NAME}"             >>$DETAILS_TXT
+            echo "built=${DATE_IMAGE_BUILT}"      >>$DETAILS_TXT
+            echo "tested=${TODAY}"                >>$DETAILS_TXT
+            echo "tested_long=\"${TODAY_LONG}\" " >>$DETAILS_TXT
+            cp $DETAILS_TXT              "$LN_S_ROOT/details.txt"
+            mv $DETAILS_TXT              "$LN_S_CURRENT/details.txt"
             echo
         fi
     fi
