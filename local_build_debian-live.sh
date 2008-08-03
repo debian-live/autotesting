@@ -3,7 +3,7 @@
 # Locally build a debian-live image.
 #  as crontab from root
 #  Kick auotesting to test..
-# debian-live-lenny-i386-gnome-desktop.iso
+# debian-live-sid-i386-xfce.iso
 
 if [ -z "$1" -a -z "$2" ]
 then
@@ -27,7 +27,7 @@ cd $TMP_DIR
 
 lh_config --distribution $2  $PACKAGES_LISTS
 sudo lh_build
-cp ./binary.iso ${1}-${2}-${3}.iso
+cp ./binary.iso ${1}-${2}-i386-${3}.iso
 ls ./ "$1"
 #chmod a+w "$1"
 sudo rm $TMP_DIR -R

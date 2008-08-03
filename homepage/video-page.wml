@@ -1,7 +1,5 @@
 #!wml
 #include <main.wmi>
-#
-# Not the best perl I ever written.
 
 <title "Autotesting LiveCD Org">
 <description "Autotesting LiveCD Images">
@@ -48,8 +46,8 @@ print "$tested";
 
 <define-tag tested-long whitespace=delete>
 <:{
-my $tested = GetSetting('tested_long','details.txt','Today');
-print "$tested_long";
+my $tested_long = GetSetting('tested_long','details.txt','Today');
+print "$tested_long"; 
 }:>
 </define-tag>
 
@@ -59,6 +57,8 @@ my $basename = GetSetting('image','details.txt','.iso');
 print "$basename";
 }:>
 </define-tag>
+
+#video-booting.theora_${TODAY}.ogg"
 
 
 <h1>Autesting of <basename></h1>
@@ -105,7 +105,7 @@ Note the first part of the boot up can appear slow, this is to avoid a qemu bug.
  	<param name="video" value="true" />
  	<param name="audio" value="false" />
  	<param name="showStatus" value="true" />
- 	<param name="bufferSize" value="200" />
+ 	<param name="bufferSize" value="500" />
         <param name="statusHeight" VALUE="36" />
         <param name="autoPlay" VALUE="false" />
         <param name="duration" VALUE="140" />
