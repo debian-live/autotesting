@@ -28,8 +28,7 @@ cd $TMP_DIR
 lh_config --distribution $2  $PACKAGES_LISTS
 sudo lh_build
 cp ./binary.iso ${1}-${2}-i386-${3}.iso
-ls ./ "$1"
-#chmod a+w "$1"
+sudo lh_clean
 sudo rm $TMP_DIR -R
 
 
