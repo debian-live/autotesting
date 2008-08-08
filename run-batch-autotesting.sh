@@ -90,54 +90,56 @@ do
             echo "Local file - assuming already in place"
             MD5SUM_LOCAL="ok"
             MD5SUM_REMOTE="$MD5SUM_LOCAL"
-        fi
-        if [[ $MD5SUM_LOCAL != $MD5SUM_REMOTE ]]
-        then
-            echo "$BASE_NAME - md5sums different, remote: $MD5SUM_REMOTE, local: $MD5SUM_LOCAL. "
-            echo "    Skip testing."
-        else
-            DATE_IMAGE_BUILT=$(ls -lh --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
-            DATE_DOWNLOADED=$(ls -lc --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
-            TODAY=$(date  +"%F")
-            TODAY_LONG=$(date )
-            mkdir "$VIDEO_DIRECTORY/${BASE_NAME}" 
-            VIDEO_NAME="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}_.ogg"
-            LOG_FILE="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}_log.txt"
-            echo "AutoTesting $BASE_NAME $VIDEO_NAME"
-            $VIDEO_QEMU_BOOTING -g 1280x960  -t 420 -v 5  $DIRECTORY/$BASE_NAME $VIDEO_NAME >$LOG_FILE 2>&1
-            echo "Finished Autotesting $BASE_NAME"
-            echo
-            echo "----"
-            echo
-            echo "* Moving to webserver"
-            LN_S_ROOT="$WEB_ROOT/$BASE_NAME/built_${DATE_IMAGE_BUILT}/Tested_${TODAY}"
-            LN_S_CURRENT="$WEB_ROOT/$BASE_NAME/current"
-            # making directories if required.
-            mkdir -p "$LN_S_ROOT"
-            rm "$LN_S_CURRENT/*" -rf
-            mkdir -p "$LN_S_CURRENT"
-            # get rid of the old current
-            cp $VIDEO_NAME                "$LN_S_ROOT/video-booting.theora_${TODAY}.ogg"
-            mv $VIDEO_NAME             "$LN_S_CURRENT/video-booting.theora_${TODAY}.ogg"
-            cp $VIDEO_NAME.montage.jpg    "$LN_S_ROOT/video-booting-montage_${TODAY}.jpg"
-            mv $VIDEO_NAME.montage.jpg "$LN_S_CURRENT/video-booting-montage_${TODAY}.jpg"
-            cp $VIDEO_NAME.end.jpg        "$LN_S_ROOT/final-screenshot_${TODAY}.jpg"
-            mv $VIDEO_NAME.end.jpg     "$LN_S_CURRENT/final-screenshot_${TODAY}.jpg"
-            echo "----"
-            cp /home/autotesting/debian-live/autotesting/homepage/video-page.wml "$LN_S_ROOT/index.wml"
-            cp /home/autotesting/debian-live/autotesting/homepage/video-page.wml "$LN_S_CURRENT/index.wml"
-            DETAILS_TXT="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}__details.txt"
-            echo "# Setting used for index.wml"   >$DETAILS_TXT
-            echo "url=${URL}"                     >>$DETAILS_TXT
-            echo "image=${BASE_NAME}"             >>$DETAILS_TXT
-            echo "built=${DATE_IMAGE_BUILT}"      >>$DETAILS_TXT
-            echo "tested=${TODAY}"                >>$DETAILS_TXT
-            echo "tested_long=\"${TODAY_LONG}\" " >>$DETAILS_TXT
-            cp $DETAILS_TXT              "$LN_S_ROOT/details.txt"
-            mv $DETAILS_TXT              "$LN_S_CURRENT/details.txt"
-            echo
-        fi
+            ;;
+    esac
+
+    if [ $MD5SUM_LOCAL != $MD5SUM_REMOTE ]
+    then
+        echo "$BASE_NAME - md5sums different, remote: $MD5SUM_REMOTE, local: $MD5SUM_LOCAL. "
+        echo "    Skip testing."
+        continue
     fi
+
+    DATE_IMAGE_BUILT=$(ls -lh --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
+    DATE_DOWNLOADED=$(ls -lc --time-style long-iso $DIRECTORY/$BASE_NAME |tr -s " "|cut -d" " -f6)
+    TODAY=$(date  +"%F")
+    TODAY_LONG=$(date )
+    mkdir "$VIDEO_DIRECTORY/${BASE_NAME}" 
+    VIDEO_NAME="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}_.ogg"
+    LOG_FILE="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}_log.txt"
+    echo "AutoTesting $BASE_NAME $VIDEO_NAME"
+    $VIDEO_QEMU_BOOTING -g 1280x960  -t 420 -v 5  $DIRECTORY/$BASE_NAME $VIDEO_NAME >$LOG_FILE 2>&1
+    echo "Finished Autotesting $BASE_NAME"
+    echo
+    echo "----"
+    echo
+    echo "* Moving to webserver"
+    LN_S_ROOT="$WEB_ROOT/$BASE_NAME/built_${DATE_IMAGE_BUILT}/Tested_${TODAY}"
+    LN_S_CURRENT="$WEB_ROOT/$BASE_NAME/current"
+    # making directories if required.
+    mkdir -p "$LN_S_ROOT"
+    rm "$LN_S_CURRENT/*" -rf
+    mkdir -p "$LN_S_CURRENT"
+    # get rid of the old current
+    cp $VIDEO_NAME                "$LN_S_ROOT/video-booting.theora_${TODAY}.ogg"
+    mv $VIDEO_NAME             "$LN_S_CURRENT/video-booting.theora_${TODAY}.ogg"
+    cp $VIDEO_NAME.montage.jpg    "$LN_S_ROOT/video-booting-montage_${TODAY}.jpg"
+    mv $VIDEO_NAME.montage.jpg "$LN_S_CURRENT/video-booting-montage_${TODAY}.jpg"
+    cp $VIDEO_NAME.end.jpg        "$LN_S_ROOT/final-screenshot_${TODAY}.jpg"
+    mv $VIDEO_NAME.end.jpg     "$LN_S_CURRENT/final-screenshot_${TODAY}.jpg"
+    echo "----"
+    cp /home/autotesting/debian-live/autotesting/homepage/video-page.wml "$LN_S_ROOT/index.wml"
+    cp /home/autotesting/debian-live/autotesting/homepage/video-page.wml "$LN_S_CURRENT/index.wml"
+    DETAILS_TXT="$VIDEO_DIRECTORY/${BASE_NAME}/Built_${DATE_IMAGE_BUILT}_Tested_${TODAY}__details.txt"
+    echo "# Setting used for index.wml"   >$DETAILS_TXT
+    echo "url=${URL}"                     >>$DETAILS_TXT
+    echo "image=${BASE_NAME}"             >>$DETAILS_TXT
+    echo "built=${DATE_IMAGE_BUILT}"      >>$DETAILS_TXT
+    echo "tested=${TODAY}"                >>$DETAILS_TXT
+    echo "tested_long=\"${TODAY_LONG}\" " >>$DETAILS_TXT
+    cp $DETAILS_TXT              "$LN_S_ROOT/details.txt"
+    mv $DETAILS_TXT              "$LN_S_CURRENT/details.txt"
+    echo
 done
 
 
