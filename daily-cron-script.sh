@@ -1,15 +1,28 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Neater then one long cron line
 #
-echo "New Day " >/home/autotesting/log/daily/autotesting.log
-/home/autotesting/debian-live/autotesting/run-batch-autotesting.sh /home/autotesting/debian-live/autotesting/daily.lst /home/autotesting/iso/daily/ /home/autotesting/video/daily/ /var/www/debian-live/i386/ >>/home/autotesting/log/daily/autotesting.log 2>&1
 
-/home/autotesting/debian-live/autotesting/run-batch-autotesting.sh /home/autotesting/debian-live/autotesting/webconverger.lst /home/autotesting/iso/daily/ /home/autotesting/video/daily/ /var/www/webconverger/i386/ webc-3.2.mini.iso.MD5SUM   >>/home/autotesting/log/daily/autotesting.log 2>&1
+BASEDIR="/home/autotesting"
 
-/home/autotesting/debian-live/autotesting/local_build_debian-live.sh /home/autotesting/iso/local/debian-live etch xfce  >/home/autotesting/log/local/autobuild.log  2>&1
-/home/autotesting/debian-live/autotesting/local_build_debian-live.sh /home/autotesting/iso/local/debian-live lenny xfce >/home/autotesting/log/local/autobuild.log  2>&1
-/home/autotesting/debian-live/autotesting/local_build_debian-live.sh /home/autotesting/iso/local/debian-live sid xfce   >/home/autotesting/log/local/autobuild.log  2>&1
+cd ${BASEDIR}/debian-live/autotesting
 
-/home/autotesting/debian-live/autotesting/run-batch-autotesting.sh /home/autotesting/debian-live/autotesting/local.lst /home/autotesting/iso/local/ /home/autotesting/video/local/ /var/www/local-build/debian-live/i386/ >/home/autotesting/log/local/autotesting.log 2>&1
+exec >${DIR}/log/daily/autotesting.log 2>&1
+echo "New Day $(date)"
 
+# Test "daily" images
+./run-batch-autotesting.sh daily.lst ${BASEDIR}/iso/daily/ ${BASEDIR}/video/daily/ /var/www/debian-live/i386/
+
+# Test webcoverger
+./run-batch-autotesting.sh webconverger.lst ${BASEDIR}/iso/daily/ ${BASEDIR}/video/daily/ /var/www/webconverger/i386/ webc-3.2.mini.iso.MD5SUM
+
+# Build our own images
+exec >${DIR}/log/daily/autobuild.log 2>&1
+for DIST in etch lenny sid
+do
+    ./local_build_debian-live.sh ${BASEDIR}/iso/local/debian-live ${DIST} xfce
+done
+
+# Test our own images
+exec >>${DIR}/log/daily/autotesting.log 2>&1
+./run-batch-autotesting.sh local.lst ${BASEDIR}/iso/local/ ${BASEDIR}/video/local/ /var/www/local-build/debian-live/i386/

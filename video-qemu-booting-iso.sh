@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # video-qemu-booting-iso.sh                               #
 #                                                         #
@@ -37,44 +37,32 @@ fi
 echo "Lock file /tmp/video-qemu-booting-iso.lock present indicating $0 is running" >/tmp/video-qemu-booting-iso.lock
 }
 
+Random () {
+	tr -c -d '0-9' < /dev/urandom | dd bs=1 count=5 2>/dev/null
+}
+
 get_global_variables ()
 {
-PASSWD="$RANDOM.$RANDOM.$RANDOM.$RANDOM.$RANDOM"
+PASSWD="$(Random).$(Random).$(Random).$(Random).$(Random)"
 HOSTNAME=$(hostname)
 OLD_DISPLAY="$DISPLAY"
 TODAY=$(date +"%F")
-TMP_DIR=/tmp/vqbi.$$.tmp
+TMP_DIR="$(mktemp -d vqbi.XXXXXXXXX)"
 IPADDRESS="127.0.0.1"
 }
 
 get_options_and_defaults ()
 {
-if [ "$SENDKEYS" = "" ]; then
- SENDKEYS="spc,l,i,v,e,spc,kp_enter"
-fi
-if [ "$QEMU_MONITOR_PORT" = "" ]; then
- QEMU_MONITOR_PORT=4444
-fi
-if [ "$GEOMETRY" = "" ]; then
- GEOMETRY="1280x960"
-fi
-if [ "$CONVERT_DIM" = "" ]; then
- CONVERT_DIM="800x600"
-fi
-FFMPEG_DIM_SCALE=$(echo "$CONVERT_DIM" | sed s/x/\ -y\ /g)
-FFMPEG_DIM_SCALE="-x $FFMPEG_DIM_SCALE"
-if [ "$TIME_Q" = "" ]; then
- TIME_Q="600"
-fi
-if [ "$VQUALITY" = "" ]; then
- VQUALITY="5"
-fi
-if [ "$QEMU_BIN" = "" ]; then
- QEMU_BIN="qemu"
- #qemu_0.8.4-etch1
-fi
+    SENDKEYS="${SENDKEYS:-spc,l,i,v,e,spc,kp_enter}"
+    QEMU_MONITOR_PORT="${QEMU_MONITOR_PORT:-4444}"
+    GEOMETRY="${GEOMETRY:-1280x960}"
+    CONVERT_DIM="${CONVERT_DIM:-800x600}"
+    FFMPEG_DIM_SCALE=$(echo "$CONVERT_DIM" | sed s/x/\ -y\ /g)
+    FFMPEG_DIM_SCALE="-x $FFMPEG_DIM_SCALE"
+    TIME_Q="${TIME_Q:-600}"
+    VQUALITY="${VQUALITY:-5}"
+    QEMU_BIN="${QEMU_BIN:-qemu}" #qemu_0.8.4-etch1
 }
-
 
 set_up_workspace ()
 {
@@ -146,7 +134,7 @@ do
  else
   REACHED_LAST_KB="Y"
  fi
- let i=i+1
+ i=$(($i+1))
 done
 sleep 1
 }
@@ -202,8 +190,8 @@ while [  $COUNTER -lt $END ]; do
 	ffmpeg -i $VIDEO -an -ss $HALFSECS -t 01 -r 1 -y -s 320x240 $TMP_DIR/video%d.jpg 2>/dev/null
 	mv $TMP_DIR/video1.jpg $MONTAGE_DIR/$COUNT.jpg 
 	LIST="$LIST $MONTAGE_DIR/$COUNT.jpg"
-	let COUNT=COUNT+1
-	let COUNTER=COUNTER+1
+	COUNT=$(($COUNT + 1))
+	COUNTER=$(($COUNTER + 1))
 done
 SPLIT=$(($LENGTH/12))
 COUNTER="$SPLIT" 	
@@ -211,8 +199,8 @@ while [  $COUNTER -lt $LENGTH ]; do
 	ffmpeg -i $VIDEO -an -ss $COUNTER -t 01 -r 1 -y $TMP_DIR/video%d.jpg 2>/dev/null
 	mv $TMP_DIR/video1.jpg $MONTAGE_DIR/$COUNT.jpg 
 	LIST="$LIST $MONTAGE_DIR/$COUNT.jpg"
-	let COUNT=COUNT+1
-	let COUNTER=$(($COUNTER+$SPLIT))
+	COUNT=$(($COUNT + 1))
+	COUNTER=$(($COUNTER+$SPLIT))
 done
 montage -geometry 180x135+4+4 -frame 5 $LIST $VIDEO.montage.jpg 
 rm -R $MONTAGE_DIR
@@ -249,7 +237,7 @@ do
 done
 shift `expr $OPTIND - 1`
 
-if [ -z "$1" -a -z "$2" ]; then
+if [ -z "$1" ] && [ -z "$2" ]; then
     echo "usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] [-n Do not gernerate a preview of the video.ogg.jpg] IsoToTest.iso Video.ogg " 
     echo
     echo " This script boots a livecd using qemu and records a video of the process. "

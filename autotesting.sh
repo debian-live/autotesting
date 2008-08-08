@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Script to be run video-qemu-boot-iso.sh via cron job
 #
@@ -20,36 +20,28 @@ do
 done
 shift `expr $OPTIND - 1`
 
-if [ -z "$1" -a -z "$2" -a -z "$3" ]; then
-    echo "usage: $0 [-p path to video-qemu-booting-iso.sh ] [-q alternative qemu binary name] [-t time to run qemu] [-v (0 to 10) encoding quality for video] /foo/bar/iso.directory/ /foo/bar/video.directory/ "
-    echo
-    echo " This script runs the video-qemu-booting-iso.sh for each iso in a directory. "
-    echo
-    echo " This script will take _along_ time to run. Approx 1 hour per iso."
-    echo " Basically for time to run = number of isos x time to run qmeu x 3  seconds"
-    echo " For testing the set-up use -t with a small value e.g. -t 10"
-    echo
-    echo " The use of -q could allow qemu-ppc be used once Debian bug #388735 is resolved."
+if [ -z "$1" ] && [ -z "$2" ] && [ -z "$3" ]; then
+    cat << EOF
+usage: $0 [-p path to video-qemu-booting-iso.sh ] [-q alternative qemu binary name] [-t time to run qemu] [-v (0 to 10) encoding quality for video] /foo/bar/iso.directory/ /foo/bar/video.directory/ 
 
-    exit
+ This script runs the video-qemu-booting-iso.sh for each iso in a directory. 
+
+ This script will take _along_ time to run. Approx 1 hour per iso.
+ Basically for time to run = number of isos x time to run qmeu x 3  seconds
+ For testing the set-up use -t with a small value e.g. -t 10
+
+ The use of -q could allow qemu-ppc be used once Debian bug #388735 is resolved.
+EOF
+    exit 0
 fi
 
 ISODIR=$1
 VIDEODIR=$2
 
-if [ "$VQBI" = "" ]; then
- VQBI="video-qemu-booting-iso.sh"
-fi
-if [ "$QEMU_BIN" = "" ]; then
- QEMU_BIN="qemu"
- #qemu_0.8.4-etch1
-fi
-if [ "$TIME_Q" = "" ]; then
- TIME_Q="1200"
-fi
-if [ "$VQUALITY" = "" ]; then
- VQUALITY="5"
-fi
+VQBI="${VQBI:-video-qemu-booting-iso.sh}"
+QEMU_BIN="${QEMU:-qemu}" #qemu_0.8.4-etch1
+TIME_Q="${TIME_Q:-1200}"
+VQUALITY="${VQUALITY:-5}"
 
 for ISO in $ISODIR/*.iso
 do
