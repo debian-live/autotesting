@@ -64,13 +64,13 @@ fi
 
 echo "Lock file present indicating $0 is running" >/tmp/run-batch-autotesting.lock
 
-URLS=$(cat $URLLIST) # stdio is used by video-qemu-booting
-for URL in $URLS
+for URL in $(cat $URLLIST)
 do 
-    BASE_NAME=$(echo $URL |  rev | cut -d"/" -f 1 | rev)
-    PART_URL=$(echo $URL |  rev | cut -d"/" -f 2- | rev)
+    BASE_NAME=$(basename $URL)
+    PART_URL=$(dirname $URL)
     MD5SUMS="$PART_URL/$MD5SUM_FILE"
     HAS_FILE_UPDATED_TODAY=$(find $DIRECTORY/ -ctime -0 \! -type d | grep "$BASE_NAME")
+
     if [ -n "$HAS_FILE_UPDATED_TODAY" ]
     then
         echo "$BASE_NAME already downloaded today "
