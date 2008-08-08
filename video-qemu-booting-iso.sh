@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # video-qemu-booting-iso.sh                               #
 #                                                         #

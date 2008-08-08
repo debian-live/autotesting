@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Script to be run video-qemu-boot-iso.sh via cron job
 #

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Neater then one long cron line
 #

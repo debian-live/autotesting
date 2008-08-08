@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Remove old files
 find /home/autotesting/*/daily/ -not -type d -ctime +4 -print0     | xargs --null --no-run-if-empty rm -f

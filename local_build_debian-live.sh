@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Locally build a debian-live image.
 #  as crontab from root
