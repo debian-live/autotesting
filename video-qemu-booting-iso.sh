@@ -47,7 +47,7 @@ PASSWD="$(Random).$(Random).$(Random).$(Random).$(Random)"
 HOSTNAME=$(hostname)
 OLD_DISPLAY="$DISPLAY"
 TODAY=$(date +"%F")
-TMP_DIR=/tmp/vqbi.$$.tmp
+TMP_DIR="$(mktemp -d vqbi.XXXXXXXXX)"
 IPADDRESS="127.0.0.1"
 }
 
