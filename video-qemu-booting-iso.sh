@@ -134,7 +134,7 @@ do
  else
   REACHED_LAST_KB="Y"
  fi
- let i=i+1
+ i=$(($i+1))
 done
 sleep 1
 }
@@ -190,8 +190,8 @@ while [  $COUNTER -lt $END ]; do
 	ffmpeg -i $VIDEO -an -ss $HALFSECS -t 01 -r 1 -y -s 320x240 $TMP_DIR/video%d.jpg 2>/dev/null
 	mv $TMP_DIR/video1.jpg $MONTAGE_DIR/$COUNT.jpg 
 	LIST="$LIST $MONTAGE_DIR/$COUNT.jpg"
-	let COUNT=COUNT+1
-	let COUNTER=COUNTER+1
+	COUNT=$(($COUNT + 1))
+	COUNTER=$(($COUNTER + 1))
 done
 SPLIT=$(($LENGTH/12))
 COUNTER="$SPLIT" 	
@@ -199,8 +199,8 @@ while [  $COUNTER -lt $LENGTH ]; do
 	ffmpeg -i $VIDEO -an -ss $COUNTER -t 01 -r 1 -y $TMP_DIR/video%d.jpg 2>/dev/null
 	mv $TMP_DIR/video1.jpg $MONTAGE_DIR/$COUNT.jpg 
 	LIST="$LIST $MONTAGE_DIR/$COUNT.jpg"
-	let COUNT=COUNT+1
-	let COUNTER=$(($COUNTER+$SPLIT))
+	COUNT=$(($COUNT + 1))
+	COUNTER=$(($COUNTER+$SPLIT))
 done
 montage -geometry 180x135+4+4 -frame 5 $LIST $VIDEO.montage.jpg 
 rm -R $MONTAGE_DIR
