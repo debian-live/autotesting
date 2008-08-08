@@ -75,10 +75,11 @@ do
     then
         echo "$BASE_NAME already downloaded today "
         echo " - skipping download and testing. To retest please remove file or set ctime>1 day"
-    else
-        HTTP=${URL:0:4}
-        if [ "$HTTP" = "http" ]
-        then
+        continue
+    fi
+
+    case "${URL}" in
+        http*)
             echo "Downloading $URL"
             rm $DIRECTORY/$BASE_NAME 2>/dev/null
             rm $DIRECTORY/$MD5SUM_FILE 2>/dev/null
@@ -86,7 +87,8 @@ do
             wget --no-verbose --tries=3 --timeout=60 --directory-prefix=$DIRECTORY $MD5SUMS
             MD5SUM_LOCAL=$(md5sum $DIRECTORY/$BASE_NAME | cut --fields=1 --delimiter=\  )
             MD5SUM_REMOTE=$(cat $DIRECTORY/$MD5SUM_FILE | grep "$BASE_NAME" | head -n 1 | cut --fields=1 --delimiter=\  )
-        else
+            ;;
+        *)
             echo "Local file - assuming already in place"
             MD5SUM_LOCAL="ok"
             MD5SUM_REMOTE="$MD5SUM_LOCAL"
