@@ -38,19 +38,10 @@ fi
 ISODIR=$1
 VIDEODIR=$2
 
-if [ "$VQBI" = "" ]; then
- VQBI="video-qemu-booting-iso.sh"
-fi
-if [ "$QEMU_BIN" = "" ]; then
- QEMU_BIN="qemu"
- #qemu_0.8.4-etch1
-fi
-if [ "$TIME_Q" = "" ]; then
- TIME_Q="1200"
-fi
-if [ "$VQUALITY" = "" ]; then
- VQUALITY="5"
-fi
+VQBI="${VQBI:-video-qemu-booting-iso.sh}"
+QEMU_BIN="${QEMU:-qemu}" #qemu_0.8.4-etch1
+TIME_Q="${TIME_Q:-1200}"
+VQUALITY="${VQUALITY:-5}"
 
 for ISO in $ISODIR/*.iso
 do

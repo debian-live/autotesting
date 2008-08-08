@@ -53,32 +53,16 @@ IPADDRESS="127.0.0.1"
 
 get_options_and_defaults ()
 {
-if [ "$SENDKEYS" = "" ]; then
- SENDKEYS="spc,l,i,v,e,spc,kp_enter"
-fi
-if [ "$QEMU_MONITOR_PORT" = "" ]; then
- QEMU_MONITOR_PORT=4444
-fi
-if [ "$GEOMETRY" = "" ]; then
- GEOMETRY="1280x960"
-fi
-if [ "$CONVERT_DIM" = "" ]; then
- CONVERT_DIM="800x600"
-fi
-FFMPEG_DIM_SCALE=$(echo "$CONVERT_DIM" | sed s/x/\ -y\ /g)
-FFMPEG_DIM_SCALE="-x $FFMPEG_DIM_SCALE"
-if [ "$TIME_Q" = "" ]; then
- TIME_Q="600"
-fi
-if [ "$VQUALITY" = "" ]; then
- VQUALITY="5"
-fi
-if [ "$QEMU_BIN" = "" ]; then
- QEMU_BIN="qemu"
- #qemu_0.8.4-etch1
-fi
+    SENDKEYS="${SENDKEYS:-spc,l,i,v,e,spc,kp_enter}"
+    QEMU_MONITOR_PORT="${QEMU_MONITOR_PORT:-4444}"
+    GEOMETRY="${GEOMETRY:-1280x960}"
+    CONVERT_DIM="${CONVERT_DIM:-800x600}"
+    FFMPEG_DIM_SCALE=$(echo "$CONVERT_DIM" | sed s/x/\ -y\ /g)
+    FFMPEG_DIM_SCALE="-x $FFMPEG_DIM_SCALE"
+    TIME_Q="${TIME_Q:-600}"
+    VQUALITY="${VQUALITY:-5}"
+    QEMU_BIN="${QEMU_BIN:-qemu}" #qemu_0.8.4-etch1
 }
-
 
 set_up_workspace ()
 {
