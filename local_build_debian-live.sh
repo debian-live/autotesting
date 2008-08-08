@@ -5,7 +5,7 @@
 #  Kick auotesting to test..
 # debian-live-sid-i386-xfce.iso
 
-if [ -z "$1" -a -z "$2" ]
+if [ -z "$1" ] && [ -z "$2" ]
 then
     echo " Usage $0 build.iso distribution packages-list "
     exit

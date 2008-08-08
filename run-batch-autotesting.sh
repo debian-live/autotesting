@@ -36,7 +36,7 @@
 
 VIDEO_QEMU_BOOTING="/home/autotesting/debian-live/autotesting/video-qemu-booting-iso.sh"
 
-if [ -z "$1" -a -z "$2" -a -z "$3" -a -z "$4" ]
+if [ -z "$1" ] && [ -z "$2" ] && [ -z "$3" ] && [ -z "$4" ]
 then
     echo "usage: $0 directory/ "
     echo

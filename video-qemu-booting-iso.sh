@@ -249,7 +249,7 @@ do
 done
 shift `expr $OPTIND - 1`
 
-if [ -z "$1" -a -z "$2" ]; then
+if [ -z "$1" ] && [ -z "$2" ]; then
     echo "usage: $0 [-s \"keys,to,send,to,qemu\"] [-p port_number for qemu-monitor] [-g geometry of vncsession] [-d dimensions of video] [-t time to run qemu] [-v (0 to 10) encoding quality for video] [-q alternative qemu binary name] [-n Do not gernerate a preview of the video.ogg.jpg] IsoToTest.iso Video.ogg " 
     echo
     echo " This script boots a livecd using qemu and records a video of the process. "
