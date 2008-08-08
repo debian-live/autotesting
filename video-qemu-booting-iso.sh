@@ -37,9 +37,13 @@ fi
 echo "Lock file /tmp/video-qemu-booting-iso.lock present indicating $0 is running" >/tmp/video-qemu-booting-iso.lock
 }
 
+Random () {
+	tr -c -d '0-9' < /dev/urandom | dd bs=1 count=5 2>/dev/null
+}
+
 get_global_variables ()
 {
-PASSWD="$RANDOM.$RANDOM.$RANDOM.$RANDOM.$RANDOM"
+PASSWD="$(Random).$(Random).$(Random).$(Random).$(Random)"
 HOSTNAME=$(hostname)
 OLD_DISPLAY="$DISPLAY"
 TODAY=$(date +"%F")
