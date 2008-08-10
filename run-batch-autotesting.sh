@@ -120,7 +120,7 @@ do
     LN_S_CURRENT="$WEB_ROOT/$BASE_NAME/current"
     # making directories if required.
     mkdir -p "$LN_S_ROOT"
-    rm "$LN_S_CURRENT/*" -rf
+    rm $LN_S_CURRENT -rf
     mkdir -p "$LN_S_CURRENT"
     # get rid of the old current
     cp $VIDEO_NAME                "$LN_S_ROOT/video-booting.theora_${TODAY}.ogg"
