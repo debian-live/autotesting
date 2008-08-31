@@ -11,7 +11,7 @@ exec >${BASEDIR}/log/daily/autotesting.log 2>&1
 echo "New Day $(date)"
 
 # lenny_live_beta1.lst
-./run-batch-autotesting.sh daily.lst ${BASEDIR}/iso/daily/ ${BASEDIR}/video/daily/ /var/www/lenny_live_beta1/i386/
+./run-batch-autotesting.sh lenny_live_beta1.lst ${BASEDIR}/iso/daily/ ${BASEDIR}/video/daily/ /var/www/lenny_live_beta1/i386/
 
 # Test "daily" images
 ./run-batch-autotesting.sh daily.lst ${BASEDIR}/iso/daily/ ${BASEDIR}/video/daily/ /var/www/debian-live/i386/
