@@ -1,0 +1,152 @@
+AUTOTESTING
+
+SUMMARY
+=======
+
+Outline how the AutoTesting server is set up to enable images to be automatically tested.
+
+
+What is AutoTesting
+===================
+
+A project to Autotest LiveCD images. The output of the autotesting is to create video recordings of booting live images "This will be really 
+great for doing QA on the images, so that we know before downloading if a latest-and-greatest sid image is even booting/working correctly :)"
+
+
+Ingredients
+===========
+
+1 x Xen instance of 128MB, 20 GB Hard Drive Space.
+1 x Debian minimal installation
+1 x IP Address
+
+
+OVERVIEW
+========
+
+Automated tasks
+===============
+
+Every [Day/Week/Month] a predetermined list of images are downloaded and tested.
+
+
+Producing Videos -  video-qemu-booting-iso.sh
+=============================================
+
+The videos are produced by booting the LiveCD using qemu. Where qemu is being displayed on a VNC session. This VNC session is being recorded by 
+vncrec. After qemu has run for a time, it is terminated, the recorded session is replayed and piped thought ffmpeg2theora to produce a video.
+
+At the start of the qemu session a number of simulated key presses are sent to LiveCD, (default "spc,l,i,v,e,spc,kp_enter"), via a telnet port 
+which is only accessible from 127.0.0.1
+
+
+Producing a Batch of Videos - run-batch-autotesting.sh
+======================================================
+
+This script will download a list of images, check the MD5SUM, run video-qemu-booting-iso.sh against each image. The output from 
+video-qemu-booting.sh will be moved to a place on the webserver path, together will a some source files to make a suitable webpage.
+
+
+Cron Scripts - autotesting.cron.txt
+===================================
+
+This does five tasks.
+1 - Run the daily-cron-script.sh.
+2 - Every week run-batch-autotesting against the week.lst of isos to test weekly. 
+3 - Every month run-batch-autotesting against the monthly.lst of isos to test monthly.
+4 - Every day run clean-old-files.sh to keep disk space low.
+5 - Every hour - touch the /var/www/index.wml and /var/www/*/index.wml and make index.html
+
+
+Cron Scripts - daily-cron-script.sh
+===================================
+
+run-batch-autotesting against the daily.lst
+run-batch-autotesting against the lenny_live_beta1.lst
+run-batch-autotesting against the webconverger.lst
+run local_build_debian-live.sh to locally build some images. Then run-batch-autotesting against the local.lst
+   [I would expect this to be disabled on final autotesting machine]
+
+
+INSTALLATION
+============
+
+Packages Required
+=================
+
+From debian.org:
+apache2-mpm-prefork apache2-utils apache2.2-common bc build-essential expect  ffmpeg2theora git-core imagemagick live-helper openssh-server qemu 
+socat sudo vnc4server wml xtightvncviewer
+
+From debian-multimedia.org: (Use a local mirror)
+ffmpeg
+
+From Debian Unoffical:
+vncrec-twibright
+
+
+User Required
+=============
+
+adduser autotesting
+addgroup autotesting www-data
+
+Add the following line to /etc/suders:
+autotesting   ALL = NOPASSWD: ALL
+
+
+Directory Structure
+===================
+
+mkdir -p /home/autotesting/debian-live
+mkdir -p /home/autotesting/iso/daily
+mkdir -p /home/autotesting/iso/weekly
+mkdir -p /home/autotesting/iso/monthly
+mkdir -p /home/autotesting/log/local
+mkdir -p /home/autotesting/log/daily
+mkdir -p /home/autotesting/log/weekly
+mkdir -p /home/autotesting/log/monthly
+mkdir -p /home/autotesting/log/local
+mkdir -p /home/autotesting/video/daily
+mkdir -p /home/autotesting/video/weekly
+mkdir -p /home/autotesting/video/monthly
+mkdir -p /home/autotesting/video/local
+mkdir /var/www/debian-live/
+mkdir /var/www/webconverger/
+mkdir /var/www/local-build/
+mkdir /var/www/jar/
+
+
+Git Autotesting
+===============
+
+git clone git://git.debian.org/git/debian-live/autotesting.git
+cp -R /home/autotesting/homepage/* /var/www/
+cp /home/autotesting/homepage/index.wml /var/www/debian-live/
+cp /home/autotesting/homepage/index.wml /var/www/webconverger/
+cp /home/autotesting/homepage/index.wml /var/www/local-build/
+
+(The above copyinf to /var/www looks ugly now I have documented it and should be fixed...)
+
+
+Java Playback - Your Cup of Coffee ?
+====================================
+
+The webpages are set up, simular to wikipedia to play theora video via java plugin. I am aware use of java may not be suitable for everyone.
+wget http://www.flumotion.net/jar/cortado/cortado-ovt-stripped-0.2.2.jar -O /var/www/jar/cortado.jar
+The most important thing is that the video are very free, so if java is not to everyone liking another player cna be choosen.
+
+
+Crontab
+=======
+
+As user autotesting:
+crontab -l /home/autotesting/debian-live/autotesting.cron.txt
+
+
+Summary
+=======
+
+Hopefully this documents how I set up an autotesting server, allowing replication. I am more than willing to add more detail. 
+
+Brendan M. Sleight - bms(a.t]barwap.com
