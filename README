@@ -1,0 +1,99 @@
+AUTOTESTING README
+==================
+
+autotesting --tests=TESTS.XML
+
+This readme outlines the different tags used in TESTS.XML. 
+
+EXAMPLE TESTS.XML
+=================
+
+<autotesting>
+  </tests>
+    <test> 
+      <download>http://127.0.0.1/autotesting/debian-live-501-i386-xfce-desktop.iso</download>
+      <title>Debian Live (xfce)</title>
+      <description>Debian Live. Daily build of squeeze xfce iso.</description>
+      <background>http://git.debian.org/?p=debian-live/homepage.git;a=blob_plain;f=images/debian-live.png</background>
+      <frequency>daily</frequency>
+      <qemu>
+        <xscreen>800x600x24</xscreen>
+        <binary>qemu</binary>
+        <options>-cdrom</options>
+        <pause>10</pause>
+        <sendkeys>kp_enter</sendkeys>
+        <!-- Time to run qmeu -->
+        <time>600</time>
+      </qemu>
+      <output>
+        <!-- Number of test sets to keep -->
+        <keep>4</keep>
+        <root>/home/bms/autotesting/tests/</root>
+        <local>example-live/squeeze/xfce/</local>
+        <video>autotesting.ogv</video>
+        <screenshots>
+          <final>final-screenshot.png</final>
+          <montage>montage-of-video-frames.png</montage>
+        </screenshots>
+      </output>
+    </test>
+  </tests>
+</autotesting>
+
+
+LOOKING AT EACH TAG
+===================
+
+<download>http://127.0.0.1/autotesting/debian-live-501-i386-xfce-desktop.iso</download>
+The location of the image to be tested. This can be an iso or an USB image (img) or in fact anything that can be booted with qemu.
+
+<title>Debian Live (xfce)</title>
+<description>Debian Live. Daily build of squeeze xfce iso.</description>
+The title and description tags are used in the opening titles of the video and also useful when scanning a long tests.xml file. 
+
+<background>http://git.debian.org/?p=debian-live/homepage.git;a=blob_plain;f=images/debian-live.png</background>
+The location of the background graphic used in the video. 
+
+<frequency>daily</frequency>
+This can be daily, weekly or monthly. Daily, means that the test will be run every time. Weekly - the test will only be done if the current day is a Sunday. Monthly - the test will only be done on the 1st day of a month, 
+
+<xscreen>800x600x24</xscreen>
+The width, height and colour depth of the xserver (Xvfb) in which to run qemu. Not at the minimum dimensions required for qemu are 800x600. 
+
+<binary>qemu</binary>
+The qemu binary. This could be for example qemu-ppc64 or qemu-arm, to test images for different architectures. 
+
+<options>-cdrom</options>
+The option to pass to qemu in conjunction with the image we are testing. In this example we are testing a iso, so we need the "-cdrom" option. For an img file you would use -hda.
+
+<pause>10</pause>
+Time to pause before sending keys presses.
+
+<sendkeys>kp_enter</sendkeys>
+Some iso and img require some user interaction to star the booting, normally just a enter being pressed. Useful for selecting different options from the grub menu. Use the qmeu sendkey command, send "kp_enter" - a keypad enter. To send multiple key presses, use a comma separated list. <sendkeys>down,down,kp_enter</sendkeys>. 
+
+<time>600</time>
+Let qemu run for 600 seconds.
+
+<keep>4</keep>
+Number of test sets to keep. If frequency is weekly, and keep is 4, then any test set older than 4 weeks will be deleted.
+
+<root>/home/bms/autotesting/tests/</root>
+<local>example-live/squeeze/xfce/</local>
+A new directory will be created at /root/prefix/DATE/, in this example /home/bms/autotesting/tests/example-live/squeeze/xfce/2009-07-01/ and the output files will be stored in this directory. Another directory /root/current/prefix/ will be created, with symlinks to the latest output files, e.g. /home/bms/autotesting/tests/current/example-live/squeeze/xfce/.
+
+<video>autotesting.ogv</video>
+The output video file stored in the output directories (see <root> and <local>). File is a theora video, created by the wonderful application - recordmydeskptop.
+
+<final>final-screenshot.png</final>
+<montage>montage-of-video-frames.png</montage>
+The output file names stored in the output directories (see <root> and <local>) of a final screenshot of qemu and a montage of frames from the video. These can give a good idea of how successful the test was rather than viewing the whole video. 
+
+
+REQUIRED APPLICATIONS
+=====================
+
+I will be trying to package autotesting - however for reference this following applications are required:-
+
+python, python-amara, wget, Xvfb, xloadimage, qemu, recordmydesktop, ffmpeg, imagemagick, gmessage
+

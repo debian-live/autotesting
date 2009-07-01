@@ -1,7 +1,0 @@
-# includes/header.wmi
-
-<div id="header">
-	<div id="logo"><a href="/"><img src="images/logo.png" alt="AutoTesting.LiveCD.org logo" /></a></div>
-	<div id="headertitle"><a href="/">Autotesting.LiveCD.org</a></div>
-	<div id="headersubtitle">Testing Live Systems!</div>
-</div>

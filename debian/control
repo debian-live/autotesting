@@ -1,0 +1,14 @@
+Source: autotesting
+Section: unknown
+Priority: optional
+Maintainer: Brendan M. Sleight <bms@barwap.com>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: <insert the upstream URL, if relevant>
+
+Package: autotesting
+Architecture: any
+Depends: python, python-amara, wget, Xvfb, xloadimage, qemu, recordmydesktop, ffmpeg, imagemagick, gmessage
+Description: automatically test by video qemu booting
+ autotesting is a script which records qemu booting. Designed to be run
+ as a cron job. Mainly used for testing liveCD images.
