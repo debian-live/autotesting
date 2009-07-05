@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Used to make debian-live-5.01-current-all.xml -->
+<!-- Maybe this does not have to be via XML. 
+     But I quite like the idea of a master XML document to make
+     the long document containing all the lists.
+     It also removes typos and a chance to do a real xml transform -->
+<autotesting>
+  <source>
+    <tests>
+      <processors>
+        <processor>
+          <name>i386</name>
+          <binary>qemu-system-i386</binary>
+        </processor>
+      </processors>
+      <images>
+        <image>
+          <name>iso-cd</name>
+          <extension>.iso</extension>
+          <qemu_options>-cdrom</qemu_options>
+        </image>
+      </images>
+      <packages>
+        <package>gnome-desktop</package>
+        <package>lxde-desktop</package>
+        <package>rescue</package>
+        <package>standard</package>
+        <package>xfce-desktop</package>
+      </packages>
+    </tests>
+    <root_url>http://cdimage.debian.org/cdimage/release/current-live/</root_url>
+    <filename_start>debian-live-501</filename_start>
+    <background>http://git.debian.org/?p=debian-live/homepage.git;a=blob_plain;f=images/debian-live.png</background>
+    <title>Debian Live 5.01</title>
+    <description>Debian Live. Daily build of 5.01, </description>
+    <frequency>monthly</frequency>
+    <qemu>
+      <xscreen>800x600x24</xscreen>
+      <options>-cdrom</options>
+      <pause>10</pause>
+      <sendkeys>kp_enter</sendkeys>
+      <time>600</time>
+    </qemu>
+    <output>
+      <keep>4</keep>
+      <root>/var/www/autotesting/</root>
+      <local>debian-live/5.01/</local>
+<!--      <local>debian-live/5.01/i386/gnome/</local> -->
+      <video>autotesting.ogv</video>
+      <screenshots>
+        <final>final-screenshot.png</final>
+        <montage>montage-of-video-frames.png</montage>
+      </screenshots>
+    </output>
+  </source>
+</autotesting>

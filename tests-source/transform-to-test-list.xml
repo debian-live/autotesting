@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="xml" version="1.0" encoding="iso-8859-1" indent="yes"/>
+<xsl:template match="/">
+<autotesting>
+  <tests>
+  <xsl:for-each select="/autotesting/source/tests/processors/processor">
+    <xsl:variable name="processor_name" select="name"/>
+    <xsl:variable name="binary" select="binary"/>
+    <xsl:for-each select="/autotesting/source/tests/images/image">
+      <xsl:variable name="image_name" select="name"/>
+      <xsl:variable name="extension" select="extension"/>
+      <xsl:variable name="options" select="qemu_options"/>
+        <xsl:for-each select="/autotesting/source/tests/packages/package">
+        <xsl:variable name="package" select="."/>
+        <test>
+          <download><xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="//autotesting/source/filename_start" />-<xsl:value-of select="$processor_name"/>-<xsl:value-of select="$package"/><xsl:value-of select="$extension"/></download>
+          <xsl:copy-of select="//autotesting/source/title" />
+          <description><xsl:value-of select="//autotesting/source/description" /> 
+          <xsl:value-of select="$processor_name"/>, &#160;<xsl:value-of select="$image_name"/>, &#160;<xsl:value-of select="."/>
+(<xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="//autotesting/source/filename_start" />-<xsl:value-of select="$processor_name"/>-<xsl:value-of select="$package"/><xsl:value-of select="$extension"/>)
+          </description>
+          <xsl:copy-of select="//autotesting/source/background" />
+          <xsl:copy-of select="//autotesting/source/frequency" />
+          <qemu>
+            <xsl:copy-of select="//autotesting/source/qemu/xscreen" />
+            <binary><xsl:value-of select="$binary"/></binary>
+            <options><xsl:value-of select="$options"/></options>
+            <xsl:copy-of select="//autotesting/source/qemu/pause" />
+            <xsl:copy-of select="//autotesting/source/qemu/sendkeys" />
+            <xsl:copy-of select="//autotesting/source/qemu/time" />
+          </qemu>
+          <output>
+            <xsl:copy-of select="//autotesting/source/output/keep" />
+            <xsl:copy-of select="//autotesting/source/output/root" />
+            <xsl:copy-of select="//autotesting/source/output/video" />
+            <local><xsl:value-of select="//autotesting/source/output/local"/>/<xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="$package"/>/</local>
+            <xsl:copy-of select="//autotesting/source/output/screenshots" />
+          </output>
+        </test>
+        </xsl:for-each>
+      </xsl:for-each>
+    </xsl:for-each>
+  </tests>
+</autotesting>
+</xsl:template>
+</xsl:stylesheet>
