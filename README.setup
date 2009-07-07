@@ -1,0 +1,68 @@
+SETTING UP AUTOTESTING
+======================
+The following details how to set up autotesting on a VPS. Assuming the VPS is a new minimal Debian install.
+
+
+Preliminaries
+=============
+Make sure the installation is upto date.
+
+Commands:-
+  su
+  apt-get update
+  apt-get upgrade
+  apt-get install locales
+  dpkg-reconfigure locales
+
+I selected, en_GB ISO-8859-1, en_GB.ISO-8859-15 ISO-8859-15, en_GB.UTF-8 UTF-8 and as default en_GB.UTF-8  
+
+
+Install Dependencies
+====================
+Commands:-
+  apt-get install python python-amara  wget  xvfb  xloadimage  qemu  recordmydesktop  ffmpeg  imagemagick  gmessage
+
+
+Locally Build Autotesting.deb
+=============================
+As autotesting is not (yet?) part of of Debian stable. So we need to build the package locally.
+
+Commands:-
+  apt-get install git-core fakeroot debhelper xmlstarlet
+  adduser autotesting
+  su autotesting
+  cd /tmp/
+  git clone git://git.debian.org/git/debian-live/autotesting.git
+  cd autotesting
+  dpkg-buildpackage -us -uc -rfakeroot
+  exit
+  dpkg -i /tmp/autotesting_0.0.1-1.1_amd64.deb
+  # note depending on architecture could be autotesting_0.0.1-1.1_i386.deb
+  # Also the version number may be higher then 0.0.1-1.1
+
+
+Install Webserver
+=================
+To be able to view the results, of autotesting a webserver is helpful.
+
+Commands:-
+  adduser autotesting www-data
+  apt get install apache2-mpm-prefork
+  mkdir /var/www/autotesting
+  chown www-data.www-data /var/www/autotesting/
+  chmod g+w /var/www/autotesting
+
+
+Add Cronjob
+===========
+Add a cronjob. In this example run example test to download test one image. See man autotesting for more information.
+
+Commands:-
+  mkdir /var/log/autotesting
+  chown autotesting.autotesting /var/log/autotesting
+  su autotesting
+  crontab -e
+
+Then add the following line:-
+2  0   *   *   * /usr/bin/autotesting --tests=/usr/share/autotesting/tests/debian-live-i386-iso-xfce.xml >/var/log/autotesting/autotesting.log 2>&1
+
