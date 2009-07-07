@@ -24,13 +24,14 @@
           <qemu_options>-cdrom</qemu_options>
         </image>
         <image>
-          <name>usb-hd</name>
+          <name>usb-hdd</name>
           <extension>.img</extension>
-          <qemu-options>-hda</qemu-options>
+          <qemu_options>-hda</qemu_options>
         </image>
       </images>
       <packages>
         <package>gnome-desktop</package>
+        <package>kde-desktop</package>
         <package>lxde-desktop</package>
         <package>rescue</package>
         <package>standard</package>

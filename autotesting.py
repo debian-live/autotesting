@@ -19,7 +19,7 @@
 
 
 from optparse import OptionParser
-import amara, datetime, os, shutil, subprocess, telnetlib, tempfile, time
+import amara, datetime, os, shutil, subprocess, sys, telnetlib, tempfile, time
 
 def displayNumber():
     """Really a global we can change later to something better.
@@ -30,6 +30,7 @@ def log(message):
     """ Print [date] message """ 
     now = datetime.datetime.now()
     print "[" + str(now) + "] " + str(message) 
+    sys.stdout.flush()
 
 def cronCheak(frequency):
     """Check if the frequency (e.g. daily, weekly, mounthly is due to 
@@ -99,6 +100,7 @@ def startXvfb(display, xscreen, background):
     authority = authorityFile()
     xvfbCommand = ["Xvfb", display, "-auth", authority.name, "-screen", "0", xscreen] 
     xvfb = subprocess.Popen(xvfbCommand)
+    time.sleep(1)
     log("Setting Xvfb background")
     xloadimage = ["xloadimage", "-display", display, "-onroot", "-fullscreen", background]
     retcode = subprocess.call(xloadimage)
@@ -134,7 +136,7 @@ def openingTitles(display, test):
     log("Showing Opening Titles")
     time.sleep(2)
     xmessage(display, str(test.title), "Autotesting of: " + str(test.title), "3", "monospace 14")
-    xmessage(display, str(test.title), str(test.description), "3", "monospace 12")
+    xmessage(display, str(test.title), str(test.description), "3", "monospace 6")
     xmessage(display, str(test.title), "Created at " + str(datetime.datetime.now()), "2", "monospace 10")
 
 def runningQemu(display, test, qemuDownload):
@@ -269,9 +271,14 @@ def main():
             xvfb = startXvfb(display, str(test.qemu.xscreen), background.name)
             (recordMyDesktop, video) = startRecordMyDesktop(display)
             openingTitles(display, test)
-            qemu = runningQemu(display, test, download.name)
-            finalImage = captureScreenshot(display)
-            kill(qemu, "Killing qemu")
+            try:
+                qemu = runningQemu(display, test, download.name)
+                finalImage = captureScreenshot(display)
+                kill(qemu, "Killing qemu")
+            except:
+                xmessage(display, str(test.title), "Qemu failed to run correctly!", "5", "monospace 14")
+                finalImage = captureScreenshot(display)
+                log("Qemu failed")
             kill(recordMyDesktop, "Killing recordmysdesktop")
             waitUntilEncodingFinished(recordMyDesktop)
             kill(xvfb, "Killing Xvfb")
@@ -279,7 +286,10 @@ def main():
             montage = createMontage(video, test)
             fileOutputs(test, video, finalImage, montage)
             log("Finished Autotesting of: " + str(test.title))
-            log("*****************************")        
+            log("*****************************")
+        else:
+            log("Skipping Autotesting of: " + str(test.title) + " as frequency " + str(test.frequency))
+            log("*****************************")
 
 if __name__ == "__main__":
     main()

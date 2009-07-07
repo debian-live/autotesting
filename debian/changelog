@@ -1,3 +1,9 @@
+autotesting (0.0.1-1.1) unstable; urgency=low
+
+  * Adding some useful test templates 
+
+ -- Brendan M. Sleight <bms@barwap.com>  Sun, 05 Jul 2009 23:40:36 +0100
+
 autotesting (0.0.1-1) unstable; urgency=low
 
   * Initial release 

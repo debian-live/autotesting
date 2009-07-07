@@ -43,7 +43,7 @@ Commands:-
 
 Install Webserver
 =================
-To be able to view the results, of autotesting a webserver is helpful.
+To be able to view the results of autotesting a webserver is helpful.
 
 Commands:-
   adduser autotesting www-data
