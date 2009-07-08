@@ -200,9 +200,12 @@ def createMontage(video, test):
         ffmpeg = ["ffmpeg", "-i", video.name, "-an", "-ss", str(ss), "-t", 
                   "01", "-r", "1", "-y", frameName]
         retcode = subprocess.call(ffmpeg)
-        shutil.move(frameNameOut, frame.name)
-        listFramesNames.append(frame.name)
-        listFrames.append(frame)
+        try:
+            shutil.move(frameNameOut, frame.name)
+            listFramesNames.append(frame.name)
+            listFrames.append(frame)
+        except:
+            pass
     montageCommand = ["montage", "-geometry", "180x135+4+4", "-frame", "5"]
     for frame in listFramesNames:
         montageCommand.append(frame)

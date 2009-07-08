@@ -9,7 +9,7 @@ EXAMPLE TESTS.XML
 =================
 
 <autotesting>
-  </tests>
+  <tests>
     <test> 
       <download>http://127.0.0.1/autotesting/debian-live-501-i386-xfce-desktop.iso</download>
       <title>Debian Live (xfce)</title>

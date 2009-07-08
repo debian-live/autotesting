@@ -47,7 +47,7 @@ To be able to view the results of autotesting a webserver is helpful.
 
 Commands:-
   adduser autotesting www-data
-  apt get install apache2-mpm-prefork
+  apt-get install apache2-mpm-prefork
   mkdir /var/www/autotesting
   chown www-data.www-data /var/www/autotesting/
   chmod g+w /var/www/autotesting
