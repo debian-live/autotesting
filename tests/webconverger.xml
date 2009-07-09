@@ -1,0 +1,65 @@
+<autotesting>
+  <tests>
+    <test> 
+      <download>http://download.webconverger.com/webc-4.9.iso</download>
+      <title>Webconverger (4.9)</title>
+      <description>Webconverger (4.9)
+Webconverger is a Live Web kiosk Linux distribution for public places. 
+It is designed to get you on the Web easily without compromising your privacy.
+(http://download.webconverger.com/webc-4.9.iso)
+      </description>
+      <background>http://webconverger.com/logos/flower600.png</background>
+      <frequency>daily</frequency>
+      <qemu>
+        <xscreen>800x600x24</xscreen>
+        <binary>qemu-system-i386</binary>
+        <options>-cdrom</options>
+        <pause>10</pause>
+        <sendkeys>kp_enter</sendkeys>
+        <!-- Time to run qmeu -->
+        <time>375</time>
+      </qemu>
+      <output>
+        <!-- Number of test sets to keep -->
+        <keep>4</keep>
+        <root>/var/www/autotesting/</root>
+        <local>webconverger/4.9/iso/</local>
+        <video>autotesting.ogv</video>
+        <screenshots>
+          <final>final-screenshot.png</final>
+          <montage>montage-of-video-frames.png</montage>
+        </screenshots>
+      </output>
+    </test>
+    <test> 
+      <download>http://download.webconverger.com/webc-4.9.img</download>
+      <title>Webconverger (4.9)</title>
+     <description>Webconverger (4.9)
+Webconverger is a Live Web kiosk Linux distribution for public places. 
+It is designed to get you on the Web easily without compromising your privacy.
+(http://download.webconverger.com/webc-4.9.img)
+       </description>
+       <background>http://webconverger.com/logos/flower600.png</background>
+      <frequency>daily</frequency>
+      <qemu>
+        <xscreen>800x600x24</xscreen>
+        <binary>qemu-system-i386</binary>
+        <options>-hda</options>
+        <pause>10</pause>
+        <sendkeys>kp_enter</sendkeys>
+        <!-- Time to run qmeu -->
+        <time>375</time>
+      </qemu>
+      <output>
+        <keep>4</keep>
+        <root>/var/www/autotesting/</root>
+        <local>webconverger/4.9/img/</local>
+        <video>autotesting.ogv</video>
+        <screenshots>
+          <final>final-screenshot.png</final>
+          <montage>montage-of-video-frames.png</montage>
+        </screenshots>
+      </output>
+    </test>
+  </tests>
+</autotesting>
