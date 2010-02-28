@@ -1,0 +1,41 @@
+<autotesting>
+  <tests>
+    <test> 
+      <download>
+        <url>http://build.webconverger.org/webconverger.</url>
+        <dateformat>%Y-%m-%d</dateformat>
+        <!-- Need to do today's (0) or yesterdays (1) etc... -->
+        <daysofset>1</daysofset>
+        <dateformatend>.iso</dateformatend>
+      </download>
+      <title>Webconverger (6.0)</title>
+      <description>Webconverger (6.0)
+Webconverger is a Live Web kiosk Linux distribution for public places. 
+These are community daily builds of Webconverger, building midnight European time the very latest developments.
+(http://build.webconverger.org/)
+      </description>
+      <background>http://webconverger.com/logos/flower600.png</background>
+      <frequency>daily</frequency>
+      <qemu>
+        <xscreen>800x600x24</xscreen>
+        <binary>qemu-system-i386</binary>
+        <options>-cdrom</options>
+        <pause>10</pause>
+        <sendkeys>kp_enter</sendkeys>
+        <!-- Time to run qmeu -->
+        <time>375</time>
+      </qemu>
+      <output>
+        <!-- Number of test sets to keep -->
+        <keep>4</keep>
+        <root>/var/www/autotesting/</root>
+        <local>webconverger/daily/iso/</local>
+        <video>autotesting.ogv</video>
+        <screenshots>
+          <final>final-screenshot.png</final>
+          <montage>montage-of-video-frames.png</montage>
+        </screenshots>
+      </output>
+    </test>
+  </tests>
+</autotesting>
