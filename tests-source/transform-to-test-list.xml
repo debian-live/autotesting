@@ -14,7 +14,7 @@
         <xsl:for-each select="/autotesting/source/tests/packages/package">
         <xsl:variable name="package" select="."/>
         <test>
-          <download><xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="//autotesting/source/filename_start" />-<xsl:value-of select="$processor_name"/>-<xsl:value-of select="$package"/><xsl:value-of select="$extension"/></download>
+          <download><url><xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="//autotesting/source/filename_start" />-<xsl:value-of select="$processor_name"/>-<xsl:value-of select="$package"/><xsl:value-of select="$extension"/></url></download>
           <xsl:copy-of select="//autotesting/source/title" />
           <description><xsl:value-of select="//autotesting/source/description" /> 
           <xsl:value-of select="$processor_name"/>, &#160;<xsl:value-of select="$image_name"/>, &#160;<xsl:value-of select="."/>

@@ -19,7 +19,7 @@
 
 
 from optparse import OptionParser
-import amara, datetime, os, shutil, subprocess, sys, telnetlib, tempfile, time
+import amara, datetime, os, shutil, subprocess, sys, telnetlib, tempfile, time, datetime
 
 def displayNumber():
     """Really a global we can change later to something better.
@@ -76,13 +76,20 @@ def wget(url):
     retcode = subprocess.call(L)
     return tmpFile
 
-def getDownloads(downloadURL, backgroundURL):
-    """ Create two temp files and download the main downlaod and 
+def getDownloads(download, backgroundURL):
+    """ Create two temp files and download the main download and 
     the background 
     return tempfile, tempfile""" 
     background = wget(str(backgroundURL))
+    try:
+        # datetime.timedelta(days=55) 
+        daysOfset = int(str(download.daysofset)) 
+        dateUrlPart = datetime.datetime.now() - datetime.timedelta(days=daysOfset)
+        downloadURL=str(download.url) + dateUrlPart.strftime(str(download.dateformat)) + str(download.dateformatend)
+    except:
+        downloadURL=str(download.url)
     download = wget(str(downloadURL))
-    return download, background
+    return download, downloadURL, background
 
 def authorityFile():
     """ Return a file containing "localhost"
@@ -132,13 +139,14 @@ def xmessage(display, title, message, time, font):
                 "-center", "\n" + message]
     retcode = subprocess.call(xloadimage)
     
-def openingTitles(display, test):
+def openingTitles(display, test, downloadURL):
     log("Showing Opening Titles")
     time.sleep(2)
     xmessage(display, str(test.title), "Autotesting of: " + str(test.title), "3", "monospace 14")
     xmessage(display, str(test.title), str(test.description), "3", "monospace 6")
     xmessage(display, str(test.title), "Created at " + str(datetime.datetime.now()), "2", "monospace 10")
-
+    xmessage(display, str(test.title), "Downloaded using this url: " + str(downloadURL), "2", "monospace 10")
+    
 def runningQemu(display, test, qemuDownload):
     """ Start qemu running, with a local telnet port at 55555 listening acting as the qemu monitor
     returns subprocess.process"""
@@ -270,10 +278,10 @@ def main():
     for test in tests.test:
         if cronCheak(str(test.frequency)):
             log("Starting Autotesting of: " + str(test.title))
-            (download, background) = getDownloads(str(test.download), str(test.background))
+            (download, downloadURL, background) = getDownloads(test.download, str(test.background))
             xvfb = startXvfb(display, str(test.qemu.xscreen), background.name)
             (recordMyDesktop, video) = startRecordMyDesktop(display)
-            openingTitles(display, test)
+            openingTitles(display, test, downloadURL)
             try:
                 qemu = runningQemu(display, test, download.name)
                 finalImage = captureScreenshot(display)

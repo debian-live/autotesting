@@ -1,12 +1,12 @@
 <autotesting>
   <tests>
     <test> 
-      <download>http://download.webconverger.com/webc-4.9.iso</download>
-      <title>Webconverger (4.9)</title>
-      <description>Webconverger (4.9)
+      <download>http://download.webconverger.com/webc-6.0.iso</download>
+      <title>Webconverger (6.0)</title>
+      <description>Webconverger (6.0)
 Webconverger is a Live Web kiosk Linux distribution for public places. 
 It is designed to get you on the Web easily without compromising your privacy.
-(http://download.webconverger.com/webc-4.9.iso)
+(http://download.webconverger.com/webc-6.0.iso)
       </description>
       <background>http://webconverger.com/logos/flower600.png</background>
       <frequency>daily</frequency>
@@ -23,7 +23,7 @@ It is designed to get you on the Web easily without compromising your privacy.
         <!-- Number of test sets to keep -->
         <keep>4</keep>
         <root>/var/www/autotesting/</root>
-        <local>webconverger/4.9/iso/</local>
+        <local>webconverger/6.0/iso/</local>
         <video>autotesting.ogv</video>
         <screenshots>
           <final>final-screenshot.png</final>
@@ -32,12 +32,12 @@ It is designed to get you on the Web easily without compromising your privacy.
       </output>
     </test>
     <test> 
-      <download>http://download.webconverger.com/webc-4.9.img</download>
-      <title>Webconverger (4.9)</title>
-     <description>Webconverger (4.9)
+      <download>http://download.webconverger.com/webc-6.0.img</download>
+      <title>Webconverger (6.0)</title>
+     <description>Webconverger (6.0)
 Webconverger is a Live Web kiosk Linux distribution for public places. 
 It is designed to get you on the Web easily without compromising your privacy.
-(http://download.webconverger.com/webc-4.9.img)
+(http://download.webconverger.com/webc-6.0.img)
        </description>
        <background>http://webconverger.com/logos/flower600.png</background>
       <frequency>daily</frequency>
@@ -53,7 +53,7 @@ It is designed to get you on the Web easily without compromising your privacy.
       <output>
         <keep>4</keep>
         <root>/var/www/autotesting/</root>
-        <local>webconverger/4.9/img/</local>
+        <local>webconverger/6.0/img/</local>
         <video>autotesting.ogv</video>
         <screenshots>
           <final>final-screenshot.png</final>

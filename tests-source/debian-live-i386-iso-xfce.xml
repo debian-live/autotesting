@@ -25,10 +25,10 @@
       </packages>
     </tests>
     <root_url>http://cdimage.debian.org/cdimage/release/current-live/</root_url>
-    <filename_start>debian-live-501</filename_start>
-    <background>http://git.debian.org/?p=debian-live/homepage.git;a=blob_plain;f=images/debian-live.png</background>
-    <title>Debian Live 5.01</title>
-    <description>Debian Live. Daily build of 5.01, </description>
+    <filename_start>debian-live-503</filename_start>
+    <background>http://live.debian.net/gitweb?p=homepage.git;a=blob_plain;f=images/debian-live.png;hb=master</background>
+    <title>Debian Live 5.03</title>
+    <description>Debian Live. Daily build of 5.03, </description>
     <frequency>daily</frequency>
     <qemu>
       <xscreen>800x600x24</xscreen>
@@ -40,7 +40,7 @@
     <output>
       <keep>4</keep>
       <root>/var/www/autotesting/</root>
-      <local>debian-live/5.01/</local>
+      <local>debian-live/5.03/</local>
 <!--      <local>debian-live/5.01/i386/gnome/</local> -->
       <video>autotesting.ogv</video>
       <screenshots>
