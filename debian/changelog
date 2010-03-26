@@ -1,3 +1,10 @@
+autotesting (0.0.1-1.2) unstable; urgency=low
+
+  * Adding 60alpha1 tests
+  * Adding md5sum cheak
+
+ -- Brendan M. Sleight <bms@brum>  Fri, 26 Mar 2010 22:01:55 +0000
+
 autotesting (0.0.1-1.1) unstable; urgency=low
 
   * Adding some useful test templates 
