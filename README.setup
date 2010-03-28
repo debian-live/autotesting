@@ -20,7 +20,7 @@ I selected, en_GB ISO-8859-1, en_GB.ISO-8859-15 ISO-8859-15, en_GB.UTF-8 UTF-8 a
 Install Dependencies
 ====================
 Commands:-
-  apt-get install python python-amara  wget  xvfb  xloadimage  qemu  recordmydesktop  ffmpeg  imagemagick  gmessage
+  apt-get install python python-amara  wget  xvfb  xloadimage  qemu  recordmydesktop  ffmpeg  imagemagick  gmessage openbios-ppc
 
 
 Locally Build Autotesting.deb

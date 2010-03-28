@@ -32,7 +32,7 @@ def log(message):
     print "[" + str(now) + "] " + str(message) 
     sys.stdout.flush()
 
-def cronCheak(frequency):
+def cronCheak(frequency, debug):
     """Check if the frequency (e.g. daily, weekly, mounthly is due to 
     be run at this time
     returns boolean.
@@ -45,7 +45,10 @@ def cronCheak(frequency):
             return True
     elif frequency == "Monthly" or frequency == "monthly":
         if now.day == 1:
-            return True        
+            return True
+    elif debug == True:
+        log("*** Debug mode - run regardless of frequency ***")
+        return True
     return False
 
 def dateBasedOnFrequency(frequency, keep):
@@ -66,21 +69,24 @@ def parseTest(xml):
     tests = amara.parse(xml)
     return tests.autotesting.tests
 
-def wget(url):
+def wget(url, limit):
     """ Use wget to download a file
     return fileObject"""
+    # --limit-rate=4M
     log("Downloading " + url)
     tmpFile = tempfile.NamedTemporaryFile(prefix="autotesting_wget_")
     L = ['wget', '-nv', str(url), '-O', tmpFile.name]
+    if limit == True:
+        L.append('--limit-rate=2M')
     # Maybe do something with the retcode in the future.
     retcode = subprocess.call(L)
     return tmpFile
 
-def getDownloads(download, backgroundURL):
+def getDownloads(download, backgroundURL, limit):
     """ Create two temp files and download the main download and 
     the background 
     return tempfile, tempfile""" 
-    background = wget(str(backgroundURL))
+    background = wget(str(backgroundURL), limit)
     try:
         # datetime.timedelta(days=55) 
         daysOfset = int(str(download.daysofset)) 
@@ -88,9 +94,35 @@ def getDownloads(download, backgroundURL):
         downloadURL=str(download.url) + dateUrlPart.strftime(str(download.dateformat)) + str(download.dateformatend)
     except:
         downloadURL=str(download.url)
-    download = wget(str(downloadURL))
+    download = wget(str(downloadURL), limit)
     return download, downloadURL, background
 
+def testCheckSum(download, downloadURL, md5sum):
+    """ Check md5sum locally against remote list of md5sum stored. 
+    """
+    mdFile = wget(str(md5sum), False)
+    data = [line.split() for  line in open(mdFile.name,'r')]
+    downloadFilename = downloadURL.split('/')[-1]
+    required = False
+    for line in data:
+        if line[1] == downloadFilename:
+            log("MDSUM required: " + str(line))
+            required = line
+    if required:
+        p = subprocess.Popen("md5sum " + download.name, shell = True, stdout=subprocess.PIPE) 
+        localMD = p.stdout.readline().split()
+        p.wait()
+        log("MDSUM required: " + str(localMD))
+        if localMD[0] == required[0]:
+            log("MDSUM matched")
+            return True
+        else:
+            log("MDSUM not matched")
+            return False
+    else:
+        log("MDSUM not found for filename")
+        return False
+            
 def authorityFile():
     """ Return a file containing "localhost"
     """
@@ -143,9 +175,9 @@ def openingTitles(display, test, downloadURL):
     log("Showing Opening Titles")
     time.sleep(2)
     xmessage(display, str(test.title), "Autotesting of: " + str(test.title), "3", "monospace 14")
-    xmessage(display, str(test.title), str(test.description), "3", "monospace 6")
     xmessage(display, str(test.title), "Created at " + str(datetime.datetime.now()), "2", "monospace 10")
-    xmessage(display, str(test.title), "Downloaded using this url: " + str(downloadURL), "2", "monospace 10")
+    xmessage(display, str(test.title), str(test.description), "3", "monospace 6")
+    xmessage(display, str(test.title), "Downloaded using this url: " + str(downloadURL), "2", "monospace 6")
     
 def runningQemu(display, test, qemuDownload):
     """ Start qemu running, with a local telnet port at 55555 listening acting as the qemu monitor
@@ -268,6 +300,10 @@ def main():
     parser = OptionParser(usage, version="%prog ")
     parser.add_option("-t", "--tests", dest="tests",
                       help="complete the autotesting definined in the xml template")
+    parser.add_option("-d", "--debug", action="store_true", dest="debug",
+                      help="Debug, run all tests regardless of frquency of testing.")
+    parser.add_option("-l", "--limit", action="store_true", dest="limit",
+                      help="Limit download rates to 4M")
     (options, args) = parser.parse_args() 
     if not options.tests :
         parser.error("Must pass a list of tests to complete.")
@@ -276,26 +312,35 @@ def main():
     display = displayNumber()
     tests = parseTest(options.tests)
     for test in tests.test:
-        if cronCheak(str(test.frequency)):
+        if cronCheak(str(test.frequency), options.debug):
             log("Starting Autotesting of: " + str(test.title))
-            (download, downloadURL, background) = getDownloads(test.download, str(test.background))
-            xvfb = startXvfb(display, str(test.qemu.xscreen), background.name)
-            (recordMyDesktop, video) = startRecordMyDesktop(display)
-            openingTitles(display, test, downloadURL)
+            (download, downloadURL, background) = getDownloads(test.download, str(test.background), options.limit)
             try:
-                qemu = runningQemu(display, test, download.name)
-                finalImage = captureScreenshot(display)
-                kill(qemu, "Killing qemu")
+                md5sum = str(test.download.md5sum)
+                checkSum = testCheckSum(download, downloadURL, md5sum)
             except:
-                xmessage(display, str(test.title), "Qemu failed to run correctly!", "5", "monospace 14")
-                finalImage = captureScreenshot(display)
-                log("Qemu failed")
-            kill(recordMyDesktop, "Killing recordmysdesktop")
-            waitUntilEncodingFinished(recordMyDesktop)
-            kill(xvfb, "Killing Xvfb")
-            # Put video, montage in right place remvoe old versions etc.
-            montage = createMontage(video, test)
-            fileOutputs(test, video, finalImage, montage)
+                log("No md5sum found - assuming file downloaded ok")
+                checkSum = True
+            if checkSum == True:
+                xvfb = startXvfb(display, str(test.qemu.xscreen), background.name)
+                (recordMyDesktop, video) = startRecordMyDesktop(display)
+                openingTitles(display, test, downloadURL)
+                try:
+                    qemu = runningQemu(display, test, download.name)
+                    finalImage = captureScreenshot(display)
+                    kill(qemu, "Killing qemu")
+                except:
+                    xmessage(display, str(test.title), "Qemu failed to run correctly!", "5", "monospace 14")
+                    finalImage = captureScreenshot(display)
+                    log("Qemu failed")
+                kill(recordMyDesktop, "Killing recordmysdesktop")
+                waitUntilEncodingFinished(recordMyDesktop)
+                kill(xvfb, "Killing Xvfb")
+                # Put video, montage in right place remvoe old versions etc.
+                montage = createMontage(video, test)
+                fileOutputs(test, video, finalImage, montage)
+            else:
+                log("Checksum (md5sum) failed - test skipped")
             log("Finished Autotesting of: " + str(test.title))
             log("*****************************")
         else:

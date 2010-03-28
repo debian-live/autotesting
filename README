@@ -11,7 +11,9 @@ EXAMPLE TESTS.XML
 <autotesting>
   <tests>
     <test> 
-      <download>http://127.0.0.1/autotesting/debian-live-501-i386-xfce-desktop.iso</download>
+      <download>
+        <url>http://127.0.0.1/autotesting/debian-live-501-i386-xfce-desktop.iso</url>
+      </download>
       <title>Debian Live (xfce)</title>
       <description>Debian Live. Daily build of squeeze xfce iso.</description>
       <background>http://git.debian.org/?p=debian-live/homepage.git;a=blob_plain;f=images/debian-live.png</background>
@@ -90,10 +92,4 @@ The output video file stored in the output directories (see <root> and <local>).
 The output file names stored in the output directories (see <root> and <local>) of a final screenshot of qemu and a montage of frames from the video. These can give a good idea of how successful the test was rather than viewing the whole video. 
 
 
-REQUIRED APPLICATIONS
-=====================
-
-I will be trying to package autotesting - however for reference this following applications are required:-
-
-python, python-amara, wget, Xvfb, xloadimage, qemu, recordmydesktop, ffmpeg, imagemagick, gmessage
-
+Some example test may be found in /usr/share/autotesting/tests/

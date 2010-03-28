@@ -9,12 +9,19 @@
     <xsl:variable name="binary" select="binary"/>
     <xsl:for-each select="/autotesting/source/tests/images/image">
       <xsl:variable name="image_name" select="name"/>
+      <xsl:variable name="image_nametwo" select="nametwo"/>
       <xsl:variable name="extension" select="extension"/>
       <xsl:variable name="options" select="qemu_options"/>
         <xsl:for-each select="/autotesting/source/tests/packages/package">
         <xsl:variable name="package" select="."/>
         <test>
-          <download><url><xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="//autotesting/source/filename_start" />-<xsl:value-of select="$processor_name"/>-<xsl:value-of select="$package"/><xsl:value-of select="$extension"/></url></download>
+          <download>
+            <url><xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="//autotesting/source/filename_start" />-<xsl:value-of select="$processor_name"/>-<xsl:value-of select="$package"/><xsl:value-of select="$extension"/></url>
+            <xsl:variable name="md" select="//autotesting/source/md5sum"/>
+            <xsl:if test="string-length($md) &gt; 0" >
+              <md5sum><xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="$md" /></md5sum>
+            </xsl:if>
+          </download>
           <xsl:copy-of select="//autotesting/source/title" />
           <description><xsl:value-of select="//autotesting/source/description" /> 
           <xsl:value-of select="$processor_name"/>, &#160;<xsl:value-of select="$image_name"/>, &#160;<xsl:value-of select="."/>
@@ -34,7 +41,7 @@
             <xsl:copy-of select="//autotesting/source/output/keep" />
             <xsl:copy-of select="//autotesting/source/output/root" />
             <xsl:copy-of select="//autotesting/source/output/video" />
-            <local><xsl:value-of select="//autotesting/source/output/local"/>/<xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="$package"/>/</local>
+            <local><xsl:value-of select="//autotesting/source/output/local"/>/<xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="$image_nametwo"/>/<xsl:value-of select="$package"/>/</local>
             <xsl:copy-of select="//autotesting/source/output/screenshots" />
           </output>
         </test>
