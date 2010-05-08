@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="xml" version="1.0" encoding="iso-8859-1" indent="yes"/>
+<xsl:template match="/">
+
+<autotesting>
+  <tests> 
+  <xsl:for-each select="/autotesting/merge/files/file">
+    <xsl:variable name="file" select="."/>
+    <xsl:for-each select="document($file)//autotesting/tests/test">
+      <xsl:copy-of select="."/>
+    </xsl:for-each>
+  </xsl:for-each>
+  </tests>
+</autotesting>
+
+</xsl:template>
+</xsl:stylesheet>

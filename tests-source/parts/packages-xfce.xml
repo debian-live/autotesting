@@ -1,0 +1,7 @@
+<autotesting>
+  <common>
+      <packages>
+        <package>xfce-desktop</package>
+      </packages>
+  </common>
+</autotesting>

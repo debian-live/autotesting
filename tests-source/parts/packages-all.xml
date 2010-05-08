@@ -1,0 +1,12 @@
+<autotesting>
+  <common>
+        <packages>
+        <package>gnome-desktop</package>
+        <package>kde-desktop</package>
+        <package>lxde-desktop</package>
+        <package>rescue</package>
+        <package>standard</package>
+        <package>xfce-desktop</package>
+      </packages>
+  </common>
+</autotesting>

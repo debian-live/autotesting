@@ -1,0 +1,15 @@
+<autotesting>
+  <merge>
+    <common>common-squeeze-build.xml</common>
+    <processors>
+      <processor>processor-i386.xml</processor>
+    </processors>
+    <images>
+      <image>images-iso-hybrid.xml</image>
+    </images>
+    <packages>
+      <package>packages-all.xml</package>
+    </packages>
+    <frequency>frequency-monthly.xml</frequency>
+  </merge>
+</autotesting>

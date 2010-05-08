@@ -1,0 +1,14 @@
+<autotesting>
+  <merge>
+    <files>
+      <!-- Daily -->
+      <file>build-60alpha1-i386-iso-hybrid-xfce-daily.xml</file>
+      <file>webconverger-daily.xml</file>
+      <file>morphix-lightgui.xml</file>
+      <!-- Monthly -->
+      <file>build-60alpha1-i386-iso-hybrid-all-monthly.xml</file>
+      <file>build-60alpha1-amd64-iso-hybrid-all-monthly.xml</file>
+      <file>build-60alpha1-powerpc-iso-all-monthly.xml</file>
+    </files>
+  </merge>
+</autotesting>

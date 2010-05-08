@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="xml" version="1.0" encoding="iso-8859-1" indent="yes"/>
+<xsl:template match="/">
+
+<xsl:variable name="parts">
+    <xsl:text>./parts/</xsl:text>
+</xsl:variable>
+
+
+<autotesting>
+  <source>
+    <tests>
+      <processors>
+      <xsl:for-each select="/autotesting/merge/processors/processor">
+        <xsl:variable name="file">
+          <xsl:value-of select="$parts"/><xsl:value-of select="."/>
+        </xsl:variable>
+        <xsl:for-each select="document($file)//autotesting/common/processors/processor">
+          <xsl:copy-of select="."/>
+        </xsl:for-each>
+      </xsl:for-each>
+      </processors>
+      <images>
+      <xsl:for-each select="/autotesting/merge/images/image">
+        <xsl:variable name="file">
+          <xsl:value-of select="$parts"/><xsl:value-of select="."/>
+        </xsl:variable>
+        <xsl:for-each select="document($file)//autotesting/common/images/image">
+          <xsl:copy-of select="."/>
+        </xsl:for-each>
+      </xsl:for-each>
+      </images>
+      <packages>
+      <xsl:for-each select="/autotesting/merge/packages/package">
+        <xsl:variable name="file">
+          <xsl:value-of select="$parts"/><xsl:value-of select="."/>
+        </xsl:variable>
+        <xsl:for-each select="document($file)//autotesting/common/packages/package">
+          <xsl:copy-of select="."/>
+        </xsl:for-each>
+      </xsl:for-each>
+      </packages>
+    </tests>
+    <xsl:variable name="frequency" >
+      <xsl:value-of select="$parts"/><xsl:value-of select="/autotesting/merge/frequency"/>
+    </xsl:variable>
+    <xsl:copy-of select="document($frequency)//autotesting/common/frequency" />
+    
+    <xsl:variable name="common" >
+      <xsl:value-of select="$parts"/><xsl:value-of select="/autotesting/merge/common"/>
+    </xsl:variable>
+    <xsl:copy-of select="document($common)//autotesting/common/*" />
+  </source>
+</autotesting>
+
+</xsl:template>
+</xsl:stylesheet>

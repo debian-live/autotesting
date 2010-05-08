@@ -1,0 +1,18 @@
+<autotesting>
+  <common>
+      <images>
+        <image>
+          <name>iso-hybrid</name>
+          <nametwo>boot-as-cdrom</nametwo>
+          <extension>.iso</extension>
+          <qemu_options>-cdrom</qemu_options>
+        </image>
+        <image>
+          <name>iso-hybrid</name>
+          <nametwo>boot-as-usb</nametwo>
+          <extension>.iso</extension>
+          <qemu_options>-hda</qemu_options>
+        </image>
+      </images>
+  </common>
+</autotesting>

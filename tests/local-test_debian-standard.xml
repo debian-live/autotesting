@@ -1,0 +1,35 @@
+<autotesting>
+  <tests>
+    <test>
+      <download>
+        <url>http://127.0.0.1/autotesting/debian-live-60alpha1-i386-standard.iso</url>
+        <md5sum>http://live.debian.net/cdimage/squeeze-builds/current/i386/iso-hybrid/MD5SUMS</md5sum>
+      </download>
+      <title>Debian Live</title>
+      <description>Debian Live. Daily build of i386 Standard iso.</description>
+      <background>http://live.debian.net/image.png</background>
+      <frequency>daily</frequency>
+      <qemu>
+        <xscreen>800x600x24</xscreen>
+        <binary>qemu</binary>
+        <options>-cdrom</options>
+        <!-- Time to pause before sending keys presses -->
+        <pause>10</pause>
+        <sendkeys>kp_enter</sendkeys>
+        <!-- Time to run qmeu -->
+        <time>300</time>
+      </qemu>
+      <output>
+        <!-- Number of test sets to keep -->
+        <keep>4</keep>
+        <root>/var/www/autotesting/</root>
+        <local>tmp/debian-live/standard/</local>
+        <video>autotesting.ogv</video>
+        <screenshots>
+          <final>final-screenshot.png</final>
+          <montage>montage-of-video-frames.png</montage>
+        </screenshots>
+      </output>
+    </test>
+  </tests>
+</autotesting>

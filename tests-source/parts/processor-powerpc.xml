@@ -1,0 +1,10 @@
+<autotesting>
+  <common>
+      <processors>
+        <processor>
+          <name>powerpc</name>
+          <binary>qemu-system-ppc</binary>
+        </processor>
+      </processors>
+  </common>
+</autotesting>

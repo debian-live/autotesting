@@ -1,0 +1,14 @@
+<autotesting>
+  <twitter>
+    <user>test</user>
+    <passw>test1</passw>
+    <hosting>
+      <!-- test results are stored according to the value of 
+            autotesting/tests/test/output/root.
+            The is the url to the path of root
+            e.g. if <root>/var/www/autotesting</root> then
+            <url>http://example.com/autotesting/</url> -->            
+      <url>http://autotesting.livecd.org/autotesting/</url>
+    </hosting>
+  </twitter>
+</autotesting>

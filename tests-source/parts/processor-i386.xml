@@ -1,0 +1,10 @@
+<autotesting>
+  <common>
+      <processors>
+        <processor>
+          <name>i386</name>
+          <binary>qemu-system-i386</binary>
+        </processor>
+      </processors>
+  </common>
+</autotesting>

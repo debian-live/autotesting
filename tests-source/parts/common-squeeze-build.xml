@@ -1,0 +1,28 @@
+<autotesting>
+  <common>
+    <root_url>http://live.debian.net/cdimage/squeeze-builds/current/</root_url>
+    <md5sum>MD5SUMS</md5sum>
+    <filename_start>debian-live-60alpha1</filename_start>
+    <background>http://live.debian.net/image.png</background>
+    <title>Debian Live 60alpha1</title>
+    <description>Debian Live. 60alpha1, </description>
+    <qemu>
+      <xscreen>800x600x24</xscreen>
+      <options>-cdrom</options>
+      <pause>10</pause>
+      <sendkeys>kp_enter</sendkeys>
+      <time>600</time>
+    </qemu>
+    <output>
+      <keep>4</keep>
+      <root>/var/www/autotesting/</root>
+      <local>debian-live/60alpha1/</local>
+<!--      <local>debian-live/5.01/i386/gnome/</local> -->
+      <video>autotesting.ogv</video>
+      <screenshots>
+        <final>final-screenshot.png</final>
+        <montage>montage-of-video-frames.png</montage>
+      </screenshots>
+    </output>
+  </common>
+</autotesting>

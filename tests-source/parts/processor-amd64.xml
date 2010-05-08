@@ -1,0 +1,10 @@
+<autotesting>
+  <common>
+      <processors>
+        <processor>
+          <name>amd64</name>
+          <binary>qemu-system-x86_64</binary>
+        </processor>
+      </processors>
+  </common>
+</autotesting>
