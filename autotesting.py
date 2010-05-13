@@ -19,7 +19,7 @@
 
 
 from optparse import OptionParser
-import amara, datetime, os, shutil, subprocess, sys, telnetlib, tempfile, time, datetime
+import amara, datetime, os, shutil, subprocess, sys, telnetlib, tempfile, time, datetime, urllib, twitter
 
 def displayNumber():
     """Really a global we can change later to something better.
@@ -37,6 +37,9 @@ def cronCheak(frequency, debug):
     be run at this time
     returns boolean.
     """
+    if debug == True:
+        log("*** Debug mode - run regardless of frequency ***")
+        return True
     now = datetime.datetime.now()
     if frequency == "Daily" or frequency == "daily":
         return True
@@ -46,9 +49,6 @@ def cronCheak(frequency, debug):
     elif frequency == "Monthly" or frequency == "monthly":
         if now.day == 1:
             return True
-    elif debug == True:
-        log("*** Debug mode - run regardless of frequency ***")
-        return True
     return False
 
 def dateBasedOnFrequency(frequency, keep):
@@ -68,6 +68,12 @@ def parseTest(xml):
     returns amaraObject"""
     tests = amara.parse(xml)
     return tests.autotesting.tests
+
+def parseTwitter(xml):
+    """ Get the xml file and load as a object using amara
+    returns amaraObject"""
+    twit = amara.parse(xml)
+    return twit.autotesting.twitter
 
 def wget(url, limit):
     """ Use wget to download a file
@@ -120,9 +126,18 @@ def testCheckSum(download, downloadURL, md5sum):
             log("MDSUM not matched")
             return False
     else:
+        # file maybe one line with non-mathcing filename (morphix.org - thanks Alex!)
+        p = subprocess.Popen("md5sum " + download.name, shell = True, stdout=subprocess.PIPE) 
+        localMD = p.stdout.readline().split()
+        p.wait()
+        for line in data:
+            if line[0] == localMD[0]:
+                log("MDSUM required: " + str(line))
+                log("MDSUM matched" + str(localMD))
+                return True
         log("MDSUM not found for filename")
         return False
-            
+        
 def authorityFile():
     """ Return a file containing "localhost"
     """
@@ -160,8 +175,12 @@ def kill(process, message):
 def startRecordMyDesktop(display):
     log("Starting Record My Desktop")
     video = tempfile.NamedTemporaryFile(prefix="autotesting_video_", suffix=".ogv")
+#    recordmydesktopCommand = ["recordmydesktop",  "--no-cursor", "-display", 
+#                               display ,"--no-sound", "--overwrite", "-o" ,video.name]
+# -v_bitrate
     recordmydesktopCommand = ["recordmydesktop",  "--no-cursor", "-display", 
-                               display ,"--no-sound", "--overwrite", "-o" ,video.name]
+                               display ,"--no-sound", "--overwrite", "-o" ,video.name,
+                               "-v_bitrate", "100000"]
     recordmydesktop = subprocess.Popen(recordmydesktopCommand)
     return recordmydesktop, video 
 
@@ -190,7 +209,11 @@ def runningQemu(display, test, qemuDownload):
     if not qemuBinary.startswith("qemu"):
         log("WARNING! : " + qemuBinary + " does not start with qemu, using qemu instead.")
         qemuBinary = "qemu"
-    qemuCommand = [qemuBinary, "-monitor", monitor, "-full-screen", str(test.qemu.options), str(qemuDownload)]
+    qemuCommand = [qemuBinary, "-monitor", monitor, "-full-screen"]    
+    for o in str(test.qemu.options).split(' '):
+        qemuCommand.append(o)
+    qemuCommand.append(str(qemuDownload))
+    log("Qemu command: " + str(qemuCommand))
     qemu = subprocess.Popen(qemuCommand, env={"DISPLAY": display})
     sendkeysToQemu(test, telnet)
     log("Running qemu for  " + str(test.qemu.time) + " seconds")
@@ -261,6 +284,11 @@ def storeFile(tmpFile, copyLocation, symLocation):
         pass
     os.symlink(copyLocation, symLocation)
 
+def tiny_url(url):
+    apiurl = "http://tinyurl.com/api-create.php?url="
+    tinyurl = urllib.urlopen(apiurl + url).read()
+    return tinyurl
+
 def fileOutputs(test, video, finalImage, montage):
     """ Move files to the correct place (as per XML tags)
     including symlinks to current.
@@ -280,6 +308,13 @@ def fileOutputs(test, video, finalImage, montage):
         os.makedirs(currentDir)
     except:
         pass
+    # Output the xml describing the test
+    singleTestFile = tempfile.NamedTemporaryFile(prefix="autotesting_test_", suffix=".xml")
+    f = open(singleTestFile.name,"w")
+    f.write(test.xml())
+    f.close()
+    storeFile(singleTestFile.name, mainDir + "test.xml", currentDir + "test.xml")
+
     storeFile(video.name, mainDir + str(test.output.video), 
                                    currentDir + str(test.output.video))    
     storeFile(finalImage.name, mainDir + str(test.output.screenshots.final), 
@@ -295,6 +330,16 @@ def fileOutputs(test, video, finalImage, montage):
             shutil.rmtree(fp)
             log("Removing - " + fp)
 
+def postTweet(test, twit):
+    local=str(test.output.local)
+    today=str(datetime.date.today())
+    long_url=str(twit.hosting.url) + "/" + local + "/" + today + "/"
+    tiny=tiny_url(long_url) 
+    tweet =  "Autotesting of: " + str(test.description)[:90] + "... " + str(tiny)
+    api = twitter.Api(username=str(twit.user), password=str(twit.passw) )
+    status = api.PostUpdate(tweet)
+    log("Tweet: " + tweet)
+
 def main():
     usage = "usage: %prog [options] --tests=TESTS.XML \n       %prog --help for all options"
     parser = OptionParser(usage, version="%prog ")
@@ -304,9 +349,15 @@ def main():
                       help="Debug, run all tests regardless of frquency of testing.")
     parser.add_option("-l", "--limit", action="store_true", dest="limit",
                       help="Limit download rates to 4M")
+    parser.add_option("-w", "--twitter", dest="twit",
+                      help="Tweet after each test is completed, accordig to the setting in xml template")
     (options, args) = parser.parse_args() 
     if not options.tests :
         parser.error("Must pass a list of tests to complete.")
+    if options.twit:
+        twit = parseTwitter(options.twit)
+    else:
+        twit = False
         
     # Main loop
     display = displayNumber()
@@ -339,13 +390,18 @@ def main():
                 # Put video, montage in right place remvoe old versions etc.
                 montage = createMontage(video, test)
                 fileOutputs(test, video, finalImage, montage)
+                if twit:
+                    try:
+                        postTweet(test, twit)
+                    except:
+                        log("Tweeting failed")
             else:
                 log("Checksum (md5sum) failed - test skipped")
             log("Finished Autotesting of: " + str(test.title))
-            log("*****************************")
+            log("**********************************")
         else:
             log("Skipping Autotesting of: " + str(test.title) + " as frequency " + str(test.frequency))
-            log("*****************************")
+            log("**********************************")
 
 if __name__ == "__main__":
     main()

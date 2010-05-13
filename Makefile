@@ -1,4 +1,4 @@
-LIST = debian-live-all.xml debian-live-i386-iso.xml debian-live-i386-iso-xfce.xml debian-live-60alpha1-i386-iso-xfce.xml debian-live-60alpha1-all.xml debian-live-60alpha1-ppc-hdd-standard.xml
+LIST = build-60alpha1-i386-iso-hybrid-xfce-daily.xml build-60alpha1-amd64-iso-hybrid-all-monthly.xml build-60alpha1-powerpc-iso-all-monthly.xml build-60alpha1-i386-iso-hybrid-all-monthly.xml 
 
 all: install
 
@@ -14,8 +14,13 @@ autotesting:
 	cp -r ./tests/* $(DESTDIR)/usr/share/autotesting/tests/
 	# Not an expert on Makefile - feel free to improve.
 	for template in $(LIST);do \
-	xmlstarlet tr ./tests-source/transform-to-test-list.xml ./tests-source/"$$template" | xmlstarlet fo -s 2 - >$(DESTDIR)/usr/share/autotesting/tests/"$$template" ; \
+	xmlstarlet tr ./tests-source/build-stage1.xml ./tests-source/"$$template" | xmlstarlet tr ./tests-source/transform-to-test-list.xml | xmlstarlet fo -s 2 -  >$(DESTDIR)/usr/share/autotesting/tests/"$$template" ; \
 	done
+	# Make a full list
+	cp ./tests-source/merge-list.xml ./tests-source/merge-tests.xml $(DESTDIR)/usr/share/autotesting/tests/
+	xmlstarlet tr $(DESTDIR)/usr/share/autotesting/tests/merge-tests.xml $(DESTDIR)/usr/share/autotesting/tests/merge-list.xml >$(DESTDIR)/usr/share/autotesting/tests/full.xml
+	rm $(DESTDIR)/usr/share/autotesting/tests/merge-tests.xml $(DESTDIR)/usr/share/autotesting/tests/merge-list.xml
+
 	
 clean:
 

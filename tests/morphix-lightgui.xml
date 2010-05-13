@@ -1,27 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
 <autotesting>
   <tests>
     <test>
-      <download>http://distro.ibiblio.org/pub/linux/distributions/morphix/autobuilds/iso/lightgui-basemod-2.6.23-2008-02-10_0018-latest.iso</download>
-      <title>Morphix LightGUI</title>
-      <description>Morphix. Daily build of LightGUI iso.</description>
+      <download>
+        <url>http://distro.ibiblio.org/pub/linux/distributions/morphix/autobuilds/base/basemod-2.6.26-latest.iso</url>
+        <md5sum>http://distro.ibiblio.org/pub/linux/distributions/morphix/autobuilds/base/basemod-2.6.26-latest.iso.md5</md5sum>
+      </download>
+      <title>Morphix Daily Base.iso</title>
+      <description>Morphix Daily autobuild of base.iso (http://distro.ibiblio.org/pub/linux/distributions/morphix/autobuilds/base/basemod-2.6.26-latest.iso)</description>
       <background>http://www.morphix.org/templates/MorphixORG/images/mambo_header.jpg</background>
       <frequency>daily</frequency>
       <qemu>
-        <xscreen>800x600x24</xscreen>
-        <binary>qemu</binary>
+        <xscreen>1024x768x24</xscreen>
+        <binary>qemu-system-i386</binary>
         <options>-cdrom</options>
-        <!-- Time to pause before sending keys presses -->
         <pause>10</pause>
-        <sendkeys>down,down,kp_enter</sendkeys>
-        <!-- Time to run qmeu -->
-        <time>600</time>
+        <sendkeys>kp_enter</sendkeys>
+        <time>400</time>
       </qemu>
       <output>
-        <!-- Number of test sets to keep -->
         <keep>4</keep>
-        <root>/home/bms/autotesting/tests/</root>
-        <local>morphix/lightGUI/</local>
+        <root>/var/www/autotesting/</root>
         <video>autotesting.ogv</video>
+        <local>morphix/basemod-2.6.26-latest/</local>
         <screenshots>
           <final>final-screenshot.png</final>
           <montage>montage-of-video-frames.png</montage>

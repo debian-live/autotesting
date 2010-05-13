@@ -11,7 +11,7 @@
       <options>-cdrom</options>
       <pause>10</pause>
       <sendkeys>kp_enter</sendkeys>
-      <time>600</time>
+      <time>900</time>
     </qemu>
     <output>
       <keep>4</keep>
