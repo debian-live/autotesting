@@ -1,6 +1,7 @@
 <autotesting>
   <merge>
     <common>common-squeeze-build.xml</common>
+    <qemu>qemu-powerpc.xml</qemu>
     <processors>
       <processor>processor-powerpc.xml</processor>
     </processors>

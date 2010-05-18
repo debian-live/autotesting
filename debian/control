@@ -8,7 +8,7 @@ Homepage: <insert the upstream URL, if relevant>
 
 Package: autotesting
 Architecture: any
-Depends: python, python-amara, wget, Xvfb, xloadimage, qemu, recordmydesktop, ffmpeg, imagemagick, gmessage
+Depends: python, python-amara, wget, Xvfb, xloadimage, qemu, recordmydesktop, mplayer, imagemagick, gmessage, python-twitter
 Description: automatically test by video qemu booting
  autotesting is a script which records qemu booting. Designed to be run
  as a cron job. Mainly used for testing liveCD images.

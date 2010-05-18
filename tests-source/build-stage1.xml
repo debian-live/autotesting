@@ -51,6 +51,12 @@
       <xsl:value-of select="$parts"/><xsl:value-of select="/autotesting/merge/common"/>
     </xsl:variable>
     <xsl:copy-of select="document($common)//autotesting/common/*" />
+
+    <xsl:variable name="qemu" >
+      <xsl:value-of select="$parts"/><xsl:value-of select="/autotesting/merge/qemu"/>
+    </xsl:variable>
+    <xsl:copy-of select="document($qemu)//autotesting/common/*" />
+
   </source>
 </autotesting>
 

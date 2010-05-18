@@ -2,8 +2,10 @@
   <merge>
     <files>
       <!-- Daily -->
-      <file>build-60alpha1-i386-iso-hybrid-xfce-daily.xml</file>
+      <file>build-60alpha1-i386-iso-hybrid-lxde-desktop-daily.xml</file>
       <file>webconverger-daily.xml</file>
+      <file>autobuilds.xml</file>      
+      <!-- Weekly -->
       <file>morphix-lightgui.xml</file>
       <!-- Monthly -->
       <file>build-60alpha1-i386-iso-hybrid-all-monthly.xml</file>

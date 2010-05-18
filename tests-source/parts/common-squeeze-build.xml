@@ -6,13 +6,6 @@
     <background>http://live.debian.net/image.png</background>
     <title>Debian Live 60alpha1</title>
     <description>Debian Live. 60alpha1, </description>
-    <qemu>
-      <xscreen>800x600x24</xscreen>
-      <options>-cdrom</options>
-      <pause>10</pause>
-      <sendkeys>kp_enter</sendkeys>
-      <time>900</time>
-    </qemu>
     <output>
       <keep>4</keep>
       <root>/var/www/autotesting/</root>

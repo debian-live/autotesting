@@ -19,7 +19,19 @@
 
 
 from optparse import OptionParser
-import amara, datetime, os, shutil, subprocess, sys, telnetlib, tempfile, time, datetime, urllib, twitter
+import amara, datetime, os, shutil, subprocess, sys, telnetlib, tempfile, time, datetime, urllib, twitter, fcntl
+
+class SingleInstance:
+    # Slimed down from excellent example given at:-
+    # http://stackoverflow.com/questions/380870/python-single-instance-of-program
+    def __init__(self):
+        self.lockfile = os.path.normpath(tempfile.gettempdir() + '/' + os.path.basename(__file__) + '.lock')
+        self.fp = open(self.lockfile, 'w')
+        try:
+            fcntl.lockf(self.fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError:
+            log("Another Autotesting is already running, quitting.")
+            sys.exit(-1)
 
 def displayNumber():
     """Really a global we can change later to something better.
@@ -83,7 +95,7 @@ def wget(url, limit):
     tmpFile = tempfile.NamedTemporaryFile(prefix="autotesting_wget_")
     L = ['wget', '-nv', str(url), '-O', tmpFile.name]
     if limit == True:
-        L.append('--limit-rate=2M')
+        L.append('--limit-rate=1.5M')
     # Maybe do something with the retcode in the future.
     retcode = subprocess.call(L)
     return tmpFile
@@ -209,7 +221,7 @@ def runningQemu(display, test, qemuDownload):
     if not qemuBinary.startswith("qemu"):
         log("WARNING! : " + qemuBinary + " does not start with qemu, using qemu instead.")
         qemuBinary = "qemu"
-    qemuCommand = [qemuBinary, "-monitor", monitor, "-full-screen"]    
+    qemuCommand = [qemuBinary, "-monitor", monitor, "-rtc", "clock=vm", "-full-screen"]    
     for o in str(test.qemu.options).split(' '):
         qemuCommand.append(o)
     qemuCommand.append(str(qemuDownload))
@@ -250,30 +262,27 @@ def createMontage(video, test):
     return fileObject"""
     log("Creating Montage")
     montage = tempfile.NamedTemporaryFile(prefix="autotesting_video_", suffix=".png")
+    tempDir = tempfile.mkdtemp(prefix="autotesting_video_", suffix="_dir")
     videoLength = int(str(test.qemu.pause)) + int(str(test.qemu.time)) 
     # Time for opening titles
     videoLength = videoLength + 2 + 3 + 3 + 2
     listFrames = []
     listFramesNames = []
-    for count in range(16):
-        ss = 0.0625 * count * videoLength
-        frame = tempfile.NamedTemporaryFile(prefix="autotesting_frame_", suffix=".jpg")
-        frameName = frame.name + "%d.jpg"
-        frameNameOut = frame.name + "1.jpg"
-        ffmpeg = ["ffmpeg", "-i", video.name, "-an", "-ss", str(ss), "-t", 
-                  "01", "-r", "1", "-y", frameName]
-        retcode = subprocess.call(ffmpeg)
-        try:
-            shutil.move(frameNameOut, frame.name)
-            listFramesNames.append(frame.name)
-            listFrames.append(frame)
-        except:
-            pass
+    # Total frames = videoLength * 15fps. Hence for get 16 snapshots.
+    # (not forgetting a snapshot at frame=0)
+    framestep = "framestep=" + str(int((videoLength * 15)/17))
+    mplayer = ["mplayer", "-vf", framestep, "-framedrop", "-nosound",
+               "-quiet", video.name, "-speed", "100", "-vo", 
+               "jpeg:outdir=" + tempDir]
+    retcode = subprocess.call(mplayer)
+    listFramesNames = os.listdir(tempDir)
+    listFramesNames.sort()
     montageCommand = ["montage", "-geometry", "180x135+4+4", "-frame", "5"]
     for frame in listFramesNames:
-        montageCommand.append(frame)
+        montageCommand.append(tempDir + "/" + frame)
     montageCommand.append(montage.name)
     retcode = subprocess.call(montageCommand)
+    shutil.rmtree(tempDir)
     return montage
 
 def storeFile(tmpFile, copyLocation, symLocation):
@@ -358,7 +367,10 @@ def main():
         twit = parseTwitter(options.twit)
     else:
         twit = False
-        
+    
+    # Only one instance of Autotesting should be running.
+    me = SingleInstance()
+    
     # Main loop
     display = displayNumber()
     tests = parseTest(options.tests)

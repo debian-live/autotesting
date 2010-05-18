@@ -1,4 +1,4 @@
-LIST = build-60alpha1-i386-iso-hybrid-xfce-daily.xml build-60alpha1-amd64-iso-hybrid-all-monthly.xml build-60alpha1-powerpc-iso-all-monthly.xml build-60alpha1-i386-iso-hybrid-all-monthly.xml 
+LIST = build-60alpha1-i386-iso-hybrid-lxde-desktop-daily.xml build-60alpha1-amd64-iso-hybrid-all-monthly.xml build-60alpha1-powerpc-iso-all-monthly.xml build-60alpha1-i386-iso-hybrid-all-monthly.xml 
 
 all: install
 

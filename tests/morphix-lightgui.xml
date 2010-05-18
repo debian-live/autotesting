@@ -9,7 +9,7 @@
       <title>Morphix Daily Base.iso</title>
       <description>Morphix Daily autobuild of base.iso (http://distro.ibiblio.org/pub/linux/distributions/morphix/autobuilds/base/basemod-2.6.26-latest.iso)</description>
       <background>http://www.morphix.org/templates/MorphixORG/images/mambo_header.jpg</background>
-      <frequency>daily</frequency>
+      <frequency>weekly</frequency>
       <qemu>
         <xscreen>1024x768x24</xscreen>
         <binary>qemu-system-i386</binary>
