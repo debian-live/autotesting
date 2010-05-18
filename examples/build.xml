@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<autotesting>
+  <builds>
+    <distributions>
+      <distribution>sid</distribution>
+    </distributions>
+    <package_lists>
+      <package_list>standard</package_list>
+    </package_lists>
+  </builds>
+</autotesting>

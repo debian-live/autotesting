@@ -1,0 +1,7 @@
+<autotesting>
+  <common>
+      <packages>
+        <package>lxde-desktop</package>
+      </packages>
+  </common>
+</autotesting>

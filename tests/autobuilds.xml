@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<autotesting>
+  <tests>
+    <test>
+      <download>
+        <url>http://autobuild.livecd.org/autobuild/debian-live/current/live-snapshot-sid-standard-binary-hybrid.iso</url>
+        <md5sum>http://autobuild.livecd.org/autobuild/debian-live/current/live-snapshot-sid-standard-binary-hybrid.iso.md5sum</md5sum>
+      </download>
+      <title>Debian Live Autobuild</title>
+      <description>Debian Live. Autobuild. Using lh snapshots at live.debian.net.[Sid Standard]</description>
+      <background>http://live.debian.net/image.png</background>
+      <frequency>daily</frequency>
+      <qemu>
+        <xscreen>1024x768x16</xscreen>
+        <binary>qemu-system-i386</binary>
+        <options>-cdrom</options>
+        <pause>10</pause>
+        <sendkeys>kp_enter</sendkeys>
+        <time>600</time>
+      </qemu>
+      <output>
+        <keep>4</keep>
+        <root>/var/www/autotesting/</root>
+        <video>autotesting.ogv</video>
+        <local>debian-live/autobuild/sid/standard/</local>
+        <screenshots>
+          <final>final-screenshot.png</final>
+          <montage>montage-of-video-frames.png</montage>
+        </screenshots>
+      </output>
+    </test>
+    <test>
+      <download>
+        <url>http://autobuild.livecd.org/autobuild/debian-live/current/git-debian-next-sid-standard-binary-hybrid.iso</url>
+        <md5sum>http://autobuild.livecd.org/autobuild/debian-live/current/git-debian-next-sid-standard-binary-hybrid.iso.md5sum</md5sum>
+      </download>
+      <title>Debian Live Autobbuild</title>
+      <description>Debian Live. Autobuild. Using lh from git debian-next branch [Sid Standard]</description>
+      <background>http://live.debian.net/image.png</background>
+      <frequency>daily</frequency>
+      <qemu>
+        <xscreen>1024x768x16</xscreen>
+        <binary>qemu-system-i386</binary>
+        <options>-cdrom</options>
+        <pause>10</pause>
+        <sendkeys>kp_enter</sendkeys>
+        <time>600</time>
+      </qemu>
+      <output>
+        <keep>4</keep>
+        <root>/var/www/autotesting/</root>
+        <video>autotesting.ogv</video>
+        <local>debian-live/autobuild/sid/standard/</local>
+        <screenshots>
+          <final>final-screenshot.png</final>
+          <montage>montage-of-video-frames.png</montage>
+        </screenshots>
+      </output>
+    </test>
+  </tests>
+</autotesting>

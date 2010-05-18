@@ -1,0 +1,16 @@
+
+# Build daily standard
+# 1 - cron-apt
+# 2 - build iso -> daily-standard + (tweet!)
+# 3 - Download git and build and install
+# 4 - Build iso -> Bleeding edge  + (tweet!)
+# 5 - Test
+# 6 - Remove live-helper
+# 7 - install live-helper from live.debian.net 
+# 8 - ???
+# 9 - Profit
+
+# <dba> bmsleight: git clone git://live.debian.net/git/live-helper.git
+# <dba> git checkout -b debian-next origin/debian-next
+# <niktaris> dba, updated live-initramfs + live-sysvinit from live.debian.net. Do I need to add it in chroot/config/* someplace too ?
+# <dba> (or, if you have git >=1.7, you can also just do a 'git checkout debian-next' instead of the 'git checkout -b debian-next origin/debian-next')

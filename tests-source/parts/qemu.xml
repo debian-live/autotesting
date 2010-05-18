@@ -1,0 +1,10 @@
+<autotesting>
+  <common>
+    <qemu>
+      <xscreen>1024x768x16</xscreen>
+      <pause>10</pause>
+      <sendkeys>kp_enter</sendkeys>
+      <time>900</time>
+    </qemu>
+  </common>
+</autotesting>

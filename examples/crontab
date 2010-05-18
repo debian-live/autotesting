@@ -1,0 +1,1 @@
+0  2   *   *   * /usr/bin/autotesting --test=/usr/share/autotesting/tests/full.xml --twitter=/home/autotesting/twitter.xml -l  >/var/log/autotesting/autotesting.log 2>&1

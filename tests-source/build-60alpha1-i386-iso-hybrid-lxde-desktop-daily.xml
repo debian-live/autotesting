@@ -1,0 +1,16 @@
+<autotesting>
+  <merge>
+    <common>common-squeeze-build.xml</common>
+    <qemu>qemu.xml</qemu>
+    <processors>
+      <processor>processor-i386.xml</processor>
+    </processors>
+    <images>
+      <image>images-iso-hybrid.xml</image>
+    </images>
+    <packages>
+      <package>packages-lxde-desktop.xml</package>
+    </packages>
+    <frequency>frequency-daily.xml</frequency>
+  </merge>
+</autotesting>
