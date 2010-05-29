@@ -3,11 +3,14 @@
   <tests>
     <test>
       <download>
-        <url>http://autobuild.livecd.org/autobuild/debian-live/current/live-snapshot-sid-standard-binary-hybrid.iso</url>
-        <md5sum>http://autobuild.livecd.org/autobuild/debian-live/current/live-snapshot-sid-standard-binary-hybrid.iso.md5sum</md5sum>
+        <url>http://autobuild.livecd.org/autobuild/debian-live/</url>
+        <dateformat>%Y-%m-%d</dateformat>
+        <!-- Need to do today's (0) or yesterdays (1) etc... -->
+        <daysofset>0</daysofset>
+        <dateformatend>/live-snapshot-squeeze-standard-binary-hybrid.iso</dateformatend>
       </download>
       <title>Debian Live Autobuild</title>
-      <description>Debian Live. Autobuild. Using lh snapshots at live.debian.net.[Sid Standard]</description>
+      <description>Debian Live. Autobuild. Using lh snapshots at live.debian.net.[Squeeze Standard]</description>
       <background>http://live.debian.net/image.png</background>
       <frequency>daily</frequency>
       <qemu>
@@ -22,7 +25,7 @@
         <keep>4</keep>
         <root>/var/www/autotesting/</root>
         <video>autotesting.ogv</video>
-        <local>debian-live/autobuild/sid/standard/</local>
+        <local>debian-live/autobuild/squeeze/standard/live.debian.net_packages/</local>
         <screenshots>
           <final>final-screenshot.png</final>
           <montage>montage-of-video-frames.png</montage>
@@ -31,11 +34,14 @@
     </test>
     <test>
       <download>
-        <url>http://autobuild.livecd.org/autobuild/debian-live/current/git-debian-next-sid-standard-binary-hybrid.iso</url>
-        <md5sum>http://autobuild.livecd.org/autobuild/debian-live/current/git-debian-next-sid-standard-binary-hybrid.iso.md5sum</md5sum>
+        <url>http://autobuild.livecd.org/autobuild/debian-live/</url>
+        <dateformat>%Y-%m-%d</dateformat>
+        <!-- Need to do today's (0) or yesterdays (1) etc... -->
+        <daysofset>0</daysofset>
+        <dateformatend>/git-debian-next-squeeze-standard-binary-hybrid.iso</dateformatend>
       </download>
       <title>Debian Live Autobbuild</title>
-      <description>Debian Live. Autobuild. Using lh from git debian-next branch [Sid Standard]</description>
+      <description>Debian Live. Autobuild. Using lh from git debian-next branch [Squeeze Standard]</description>
       <background>http://live.debian.net/image.png</background>
       <frequency>daily</frequency>
       <qemu>
@@ -50,7 +56,7 @@
         <keep>4</keep>
         <root>/var/www/autotesting/</root>
         <video>autotesting.ogv</video>
-        <local>debian-live/autobuild/sid/standard/</local>
+        <local>debian-live/autobuild/squeeze/standard/git-debian-next/</local>
         <screenshots>
           <final>final-screenshot.png</final>
           <montage>montage-of-video-frames.png</montage>

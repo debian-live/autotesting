@@ -17,13 +17,13 @@ Building midnight European time the very latest developments.
       <background>http://webconverger.com/logos/flower600.png</background>
       <frequency>daily</frequency>
       <qemu>
-        <xscreen>1024x768x24</xscreen>
+        <xscreen>800x600x16</xscreen>
         <binary>qemu-system-i386</binary>
         <options>-cdrom</options>
         <pause>10</pause>
         <sendkeys>kp_enter</sendkeys>
         <!-- Time to run qmeu -->
-        <time>375</time>
+        <time>600</time>
       </qemu>
       <output>
         <!-- Number of test sets to keep -->

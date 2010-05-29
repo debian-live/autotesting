@@ -95,7 +95,7 @@ def wget(url, limit):
     tmpFile = tempfile.NamedTemporaryFile(prefix="autotesting_wget_")
     L = ['wget', '-nv', str(url), '-O', tmpFile.name]
     if limit == True:
-        L.append('--limit-rate=1.5M')
+        L.append('--limit-rate=1M')
     # Maybe do something with the retcode in the future.
     retcode = subprocess.call(L)
     return tmpFile
@@ -214,17 +214,17 @@ def runningQemu(display, test, qemuDownload):
     """ Start qemu running, with a local telnet port at 55555 listening acting as the qemu monitor
     returns subprocess.process"""
     telnet = ("127.0.0.1", "55555")
-    address, port = telnet
-    monitor = "telnet:" + address + ":" + port  + ",server,nowait"
     qemuBinary = str(test.qemu.binary)
     log("Starting " + qemuBinary)
     if not qemuBinary.startswith("qemu"):
         log("WARNING! : " + qemuBinary + " does not start with qemu, using qemu instead.")
         qemuBinary = "qemu"
-    qemuCommand = [qemuBinary, "-monitor", monitor, "-rtc", "clock=vm", "-full-screen"]    
-    for o in str(test.qemu.options).split(' '):
+    address, port = telnet
+    monitor = "telnet:" + address + ":" + port  + ",server,nowait"
+    qemuCommandStr = qemuBinary + " -monitor " + monitor + " -full-screen " + str(test.qemu.options) + " " + str(qemuDownload)
+    qemuCommand = []
+    for o in qemuCommandStr.split(' '):
         qemuCommand.append(o)
-    qemuCommand.append(str(qemuDownload))
     log("Qemu command: " + str(qemuCommand))
     qemu = subprocess.Popen(qemuCommand, env={"DISPLAY": display})
     sendkeysToQemu(test, telnet)
@@ -270,7 +270,7 @@ def createMontage(video, test):
     listFramesNames = []
     # Total frames = videoLength * 15fps. Hence for get 16 snapshots.
     # (not forgetting a snapshot at frame=0)
-    framestep = "framestep=" + str(int((videoLength * 15)/17))
+    framestep = "framestep=" + str(int((videoLength * 15)/14))
     mplayer = ["mplayer", "-vf", framestep, "-framedrop", "-nosound",
                "-quiet", video.name, "-speed", "100", "-vo", 
                "jpeg:outdir=" + tempDir]
@@ -344,7 +344,7 @@ def postTweet(test, twit):
     today=str(datetime.date.today())
     long_url=str(twit.hosting.url) + "/" + local + "/" + today + "/"
     tiny=tiny_url(long_url) 
-    tweet =  "Autotesting of: " + str(test.description)[:90] + "... " + str(tiny)
+    tweet =  "Autotesting of: " + str(test.description)[:50] + "... " + str(tiny) + " (See test.xml for url of image tested)"
     api = twitter.Api(username=str(twit.user), password=str(twit.passw) )
     status = api.PostUpdate(tweet)
     log("Tweet: " + tweet)

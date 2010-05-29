@@ -4,7 +4,7 @@
         <image>
           <name>iso</name>
           <extension>.iso</extension>
-          <qemu_options>-cdrom</qemu_options>
+          <qemu_options>-vga std -cdrom</qemu_options>
         </image>
       </images>
   </common>

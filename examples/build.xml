@@ -2,7 +2,7 @@
 <autotesting>
   <builds>
     <distributions>
-      <distribution>sid</distribution>
+      <distribution>squeeze</distribution>
     </distributions>
     <package_lists>
       <package_list>standard</package_list>

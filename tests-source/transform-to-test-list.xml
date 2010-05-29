@@ -25,7 +25,6 @@
           <xsl:copy-of select="//autotesting/source/title" />
           <description><xsl:value-of select="//autotesting/source/description" /> 
           <xsl:value-of select="$processor_name"/>, <xsl:value-of select="$image_name"/>, <xsl:value-of select="."/>
-(<xsl:value-of select="//autotesting/source/root_url" /><xsl:value-of select="$processor_name"/>/<xsl:value-of select="$image_name"/>/<xsl:value-of select="//autotesting/source/filename_start" />-<xsl:value-of select="$processor_name"/>-<xsl:value-of select="$package"/><xsl:value-of select="$extension"/>)
           </description>
           <xsl:copy-of select="//autotesting/source/background" />
           <xsl:copy-of select="//autotesting/source/frequency" />

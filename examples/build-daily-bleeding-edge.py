@@ -93,8 +93,11 @@ def parseBuilds(xml):
 
 def postTweet(twit, message, long_url=False):
     if long_url:
-        tiny=tiny_url(long_url) 
-        tweet = message[:120] + "... " + str(tiny)
+        try:
+            tiny=tiny_url(long_url) 
+            tweet = message[:120] + "... " + str(tiny)
+        except:
+            tweet = message[:139]
     else:
         tweet = message[:139]
     try:
